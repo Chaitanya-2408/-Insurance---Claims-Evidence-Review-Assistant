@@ -79,34 +79,40 @@ class ClaimReviewService:
             )
 
             # ----------------------------------------------------
-            # Step 4: Keep deterministic findings authoritative
+            # Step 4: Build Gemini structured review
             # ----------------------------------------------------
 
             final_review = review.model_dump()
 
+            # ----------------------------------------------------
+            # Step 5: Deterministic policy engine is authoritative
+            # ----------------------------------------------------
+
             final_review["decision"] = initial_decision
 
-            # Deterministic findings are the authoritative findings.
-            # Gemini can provide reasoning and summary, but must not
-            # replace objective policy checks.
-            final_review["findings"] = self._build_evidence_findings(
-                findings
+            final_review["findings"] = (
+                self._build_evidence_findings(findings)
+            )
+
+            final_review["missing_information"] = (
+                self._get_missing_information(findings)
+            )
+
+            final_review["uncertainty"] = (
+                self._get_uncertainty(findings)
             )
 
             # ----------------------------------------------------
-            # Step 5: Ensure missing information is grounded
+            # Step 6: Build a grounded final summary
             # ----------------------------------------------------
 
-            final_review["missing_information"] = self._get_missing_information(
-                findings
-            )
-
-            # ----------------------------------------------------
-            # Step 6: Ensure uncertainty is grounded
-            # ----------------------------------------------------
-
-            final_review["uncertainty"] = self._get_uncertainty(
-                findings
+            final_review["summary"] = (
+                self._build_grounded_summary(
+                    claim=claim,
+                    findings=findings,
+                    initial_decision=initial_decision,
+                    gemini_summary=final_review.get("summary")
+                )
             )
 
             return {
@@ -213,6 +219,136 @@ class ClaimReviewService:
 
         return uncertainty
 
+    def _build_grounded_summary(
+        self,
+        claim,
+        findings,
+        initial_decision,
+        gemini_summary=None
+    ):
+        """
+        Build a summary that cannot contradict deterministic
+        policy findings.
+
+        Gemini reasoning is used only as supporting context.
+        Objective policy conclusions always come from the
+        deterministic engine.
+        """
+
+        # --------------------------------------------------------
+        # APPROVE
+        # --------------------------------------------------------
+
+        if initial_decision == "APPROVE":
+
+            return (
+                "The claim satisfies the applicable deterministic "
+                "policy checks based on the submitted evidence. "
+                "The required documents are present, the reported "
+                "claim is within the permitted reporting window, "
+                "the claimed amount is within the insured value "
+                "limit, and no material contradiction or exclusion "
+                "was identified."
+            )
+
+        # --------------------------------------------------------
+        # REQUEST INFORMATION
+        # --------------------------------------------------------
+
+        if initial_decision == "REQUEST_INFORMATION":
+
+            missing_information = (
+                self._get_missing_information(findings)
+            )
+
+            if missing_information:
+
+                missing_text = "; ".join(
+                    missing_information
+                )
+
+                return (
+                    "The claim may be covered, but additional "
+                    "information is required before a final "
+                    "decision can be made. Missing information: "
+                    f"{missing_text}."
+                )
+
+            return (
+                "The claim may be covered, but additional "
+                "information is required before a final decision "
+                "can be made."
+            )
+
+        # --------------------------------------------------------
+        # REJECT
+        # --------------------------------------------------------
+
+        if initial_decision == "REJECT":
+
+            rejection_reasons = [
+                item["message"]
+                for item in findings
+                if item["severity"] == "HIGH"
+            ]
+
+            if rejection_reasons:
+
+                reason_text = "; ".join(
+                    rejection_reasons
+                )
+
+                return (
+                    "The claim is not supported under the "
+                    "deterministic policy checks. "
+                    f"Reason: {reason_text}"
+                )
+
+            return (
+                "The claim is not supported under the "
+                "deterministic policy checks."
+            )
+
+        # --------------------------------------------------------
+        # ESCALATE
+        # --------------------------------------------------------
+
+        if initial_decision == "ESCALATE":
+
+            uncertainty = self._get_uncertainty(
+                findings
+            )
+
+            if uncertainty:
+
+                uncertainty_text = "; ".join(
+                    uncertainty
+                )
+
+                return (
+                    "The claim requires manual review because "
+                    "the available evidence contains material "
+                    "uncertainty or a policy condition requiring "
+                    "escalation. "
+                    f"Reason: {uncertainty_text}"
+                )
+
+            return (
+                "The claim requires manual review because the "
+                "available evidence does not establish a "
+                "sufficiently certain policy outcome."
+            )
+
+        # --------------------------------------------------------
+        # Safety fallback
+        # --------------------------------------------------------
+
+        return (
+            "The claim could not be assigned a final policy "
+            "outcome with sufficient certainty and requires "
+            "manual review."
+        )
+
     def _build_fallback_review(
         self,
         claim,
@@ -237,6 +373,7 @@ class ClaimReviewService:
             "429" in error_text
             or "RESOURCE_EXHAUSTED" in error_text
         ):
+
             availability_message = (
                 "Gemini API quota is temporarily unavailable. "
                 "The decision below is based on deterministic "
@@ -247,6 +384,7 @@ class ClaimReviewService:
             "503" in error_text
             or "UNAVAILABLE" in error_text
         ):
+
             availability_message = (
                 "Gemini API is temporarily unavailable. "
                 "The decision below is based on deterministic "
@@ -254,6 +392,7 @@ class ClaimReviewService:
             )
 
         else:
+
             availability_message = (
                 "Gemini reasoning was unavailable. "
                 "The decision below is based on deterministic "
@@ -264,26 +403,33 @@ class ClaimReviewService:
         # Build grounded findings
         # --------------------------------------------------------
 
-        evidence_findings = self._build_evidence_findings(
-            findings
+        evidence_findings = (
+            self._build_evidence_findings(findings)
         )
 
-        missing_information = self._get_missing_information(
-            findings
+        missing_information = (
+            self._get_missing_information(findings)
         )
 
-        uncertainty = self._get_uncertainty(
-            findings
+        uncertainty = (
+            self._get_uncertainty(findings)
         )
 
         # --------------------------------------------------------
-        # Build fallback summary
+        # Build deterministic summary
         # --------------------------------------------------------
+
+        grounded_summary = (
+            self._build_grounded_summary(
+                claim=claim,
+                findings=findings,
+                initial_decision=initial_decision
+            )
+        )
 
         summary = (
             f"{availability_message} "
-            f"Initial deterministic decision: "
-            f"{initial_decision}."
+            f"{grounded_summary}"
         )
 
         # --------------------------------------------------------
