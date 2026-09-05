@@ -190,8 +190,9 @@ demo_documents/
     repair_estimate.pdf
     incident_description.pdf
     fir.pdf
-
+```
 ## 8. Architecture
+```text
 
                     ┌──────────────────────┐
                     │     Web Interface    │
@@ -232,8 +233,9 @@ demo_documents/
                     │ + Recommendation     │
                     └──────────────────────┘
 
-
+```
 ## 9. Project Structure
+```text
 
 ClaimGuard-AI/
 │
@@ -273,8 +275,12 @@ ClaimGuard-AI/
 └── static/
     └── index.html
 
+```
+
 
 ## 10.Technology Stack
+
+```text
 
 | Component      | Technology               |
 | -------------- | ------------------------ |
@@ -288,8 +294,9 @@ ClaimGuard-AI/
 | Data           | JSON + local policy text |
 | API            | Gemini API               |
 
-
+```
 ## 11. Safety and Grounding
+```text
 
 ClaimGuard AI follows several safeguards:
 
@@ -304,8 +311,11 @@ ClaimGuard AI follows several safeguards:
 
 The AI component assists the reviewer rather than replacing final human
 judgement.
+```
 
 ## 12. Engineering Approach
+
+```text
 
 Deterministic Layer
         │
@@ -323,5 +333,6 @@ Deterministic Layer
                     ├── Policy context
                     ├── Evidence context
                     └── Reviewer-friendly explanation
+```
 
 
