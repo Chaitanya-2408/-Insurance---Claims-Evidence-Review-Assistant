@@ -1,884 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ClaimGuard AI</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #1f2937;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: min(1200px, 94%);
-            margin: auto;
-        }
-
-        header {
-            background: #111827;
-            color: white;
-            padding: 22px 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            font-size: 32px;
-        }
-
-        .brand h1 {
-            font-size: 24px;
-        }
-
-        .brand p {
-            color: #cbd5e1;
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #d1fae5;
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: #10b981;
-        }
-
-        main {
-            padding: 35px 0 50px;
-        }
-
-        .hero {
-            margin-bottom: 28px;
-        }
-
-        .hero h2 {
-            font-size: 30px;
-            margin-bottom: 8px;
-        }
-
-        .hero p {
-            color: #64748b;
-            line-height: 1.6;
-        }
-
-        .review-panel {
-            background: white;
-            border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 3px 15px rgba(15, 23, 42, 0.07);
-            margin-bottom: 25px;
-        }
-
-        .review-panel h3 {
-            margin-bottom: 15px;
-        }
-
-        .selector-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        select {
-            flex: 1;
-            padding: 13px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 15px;
-            background: white;
-        }
-
-        button {
-            border: none;
-            border-radius: 8px;
-            padding: 13px 22px;
-            background: #2563eb;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        button:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .claim-description {
-            margin-top: 15px;
-            padding: 14px;
-            background: #f8fafc;
-            border-radius: 8px;
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .loading {
-            display: none;
-            margin: 25px 0;
-            text-align: center;
-            color: #475569;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid #cbd5e1;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .error {
-            display: none;
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .results {
-            display: none;
-        }
-
-        .decision-card {
-            background: white;
-            border-radius: 14px;
-            padding: 25px;
-            box-shadow: 0 3px 15px rgba(15, 23, 42, 0.07);
-            margin-bottom: 22px;
-        }
-
-        .decision-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 18px;
-        }
-
-        .decision-badge {
-            padding: 9px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .approve {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .reject {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .request {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .escalate {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .summary {
-            color: #475569;
-            line-height: 1.7;
-        }
-
-        .section-title {
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-
-        .findings-grid {
-            display: grid;
-            gap: 16px;
-        }
-
-        .finding {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
-            border-left: 4px solid #64748b;
-        }
-
-        .finding-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .finding-type {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .severity {
-            font-size: 11px;
-            font-weight: bold;
-            padding: 5px 8px;
-            border-radius: 12px;
-            background: #f1f5f9;
-        }
-
-        .finding-message {
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .policy-clause {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #334155;
-        }
-
-        .evidence {
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 8px;
-        }
-
-        .evidence-label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #64748b;
-            margin-bottom: 5px;
-        }
-
-        .evidence-reference {
-            font-family: monospace;
-            font-size: 12px;
-            color: #334155;
-        }
-
-        .evidence-quote {
-            font-size: 13px;
-            color: #475569;
-            margin-top: 4px;
-            line-height: 1.5;
-        }
-
-        .info-section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.06);
-        }
-
-        .info-section ul {
-            padding-left: 20px;
-            color: #475569;
-            line-height: 1.8;
-        }
-
-        .policy-list {
-            display: grid;
-            gap: 10px;
-        }
-
-        .policy-item {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 12px 14px;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-
-        .policy-score {
-            font-family: monospace;
-            color: #64748b;
-        }
-
-        footer {
-            text-align: center;
-            color: #94a3b8;
-            font-size: 12px;
-            padding: 20px 0 35px;
-        }
-
-        @media (max-width: 700px) {
-            .header-content {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .selector-row {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
-
-            .decision-header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClaimGuard AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#f1f5f9;color:#0f172a;min-height:100vh}
+.container{width:min(1240px,94%);margin:auto}
+header{background:#0f172a;color:#fff;padding:18px 0;box-shadow:0 3px 12px #0002}
+.header-content{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}.brand-icon{font-size:30px}
+.brand h1{font-size:23px}.brand p{color:#94a3b8;font-size:12px;margin-top:3px}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:#a7f3d0}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#10b981}
+main{padding:30px 0 50px}.hero{margin-bottom:22px}.hero h2{font-size:29px;margin-bottom:7px}.hero p{color:#64748b;line-height:1.6}
+.tabs{display:flex;gap:8px;margin-bottom:16px}.tab{background:#e2e8f0;color:#334155;border:0;padding:10px 16px;border-radius:8px;font-weight:700}.tab.active{background:#2563eb;color:white}
+.panel{background:#fff;border-radius:14px;padding:23px;box-shadow:0 3px 15px #0f172a12;margin-bottom:22px}
+.panel h3{margin-bottom:16px}.selector-row{display:flex;gap:12px}
+select,input,textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff;color:#0f172a}
+textarea{min-height:105px;resize:vertical}.selector-row select{flex:1}
+button{border:0;border-radius:8px;padding:12px 20px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
+button:hover{background:#1d4ed8}button:disabled{background:#94a3b8;cursor:not-allowed}
+.secondary{background:#e2e8f0;color:#334155}.secondary:hover{background:#cbd5e1}
+.claim-description{margin-top:14px;padding:13px;background:#f8fafc;border-radius:8px;color:#475569;font-size:14px;line-height:1.5}
+.new-form{display:none}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.field.full{grid-column:1/-1}.field label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:6px}.hint{font-size:11px;color:#94a3b8;margin-top:4px}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.loading{display:none;margin:20px 0;text-align:center;color:#475569}.spinner{display:inline-block;width:18px;height:18px;border:3px solid #cbd5e1;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}
+.error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;margin-bottom:18px}
+.results{display:none}.decision-card{background:#fff;border-radius:14px;padding:23px;box-shadow:0 3px 15px #0f172a12;margin-bottom:20px}
+.decision-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}.decision-badge{padding:8px 15px;border-radius:20px;font-weight:800;font-size:13px}
+.approve{background:#dcfce7;color:#166534}.reject{background:#fee2e2;color:#991b1b}.request{background:#fef3c7;color:#92400e}.escalate{background:#ede9fe;color:#5b21b6}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.chip{background:#f1f5f9;padding:6px 10px;border-radius:999px;font-size:11px;color:#475569;font-weight:700}.summary{color:#475569;line-height:1.7}
+.section-title{font-size:19px;margin:20px 0 13px}.findings-grid{display:grid;gap:13px}.finding{background:#fff;border-radius:12px;padding:18px;box-shadow:0 3px 12px #0f172a0f;border-left:4px solid #64748b}
+.finding-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px}.finding-type{font-weight:800;font-size:15px}.severity{font-size:10px;font-weight:800;padding:5px 8px;border-radius:12px;background:#f1f5f9}.finding-message{color:#475569;line-height:1.55;margin-bottom:12px}
+.policy-clause{font-size:12px;font-weight:800;color:#334155;margin-bottom:9px}.evidence{background:#f8fafc;border-radius:8px;padding:11px;margin-top:7px}.evidence-label{font-size:11px;font-weight:800;color:#64748b}.evidence-reference{font:11px monospace;color:#334155;margin-top:3px}.evidence-quote{font-size:12px;color:#475569;margin-top:3px;line-height:1.45}
+.info-section{background:#fff;border-radius:12px;padding:18px;margin-top:17px;box-shadow:0 3px 12px #0f172a0f}.info-section ul{padding-left:20px;color:#475569;line-height:1.8}
+.policy-list{display:grid;gap:9px}.policy-item{display:flex;justify-content:space-between;gap:15px;padding:11px 13px;background:#f8fafc;border-radius:8px;font-size:13px}.policy-score{font:12px monospace;color:#64748b}
+footer{text-align:center;color:#94a3b8;font-size:11px;padding:18px 0 30px}
+@media(max-width:700px){.header-content,.selector-row,.decision-header{align-items:flex-start;flex-direction:column}.selector-row button,.form-actions button{width:100%}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.form-actions{flex-direction:column}}
+</style>
 </head>
-
 <body>
-
-<header>
-    <div class="container header-content">
-        <div class="brand">
-            <div class="brand-icon">🛡️</div>
-
-            <div>
-                <h1>ClaimGuard AI</h1>
-                <p>Insurance Claims Evidence Review Assistant</p>
-            </div>
-        </div>
-
-        <div class="status">
-            <span class="status-dot"></span>
-            System Ready
-        </div>
-    </div>
-</header>
+<header><div class="container header-content">
+<div class="brand"><div class="brand-icon">🛡️</div><div><h1>ClaimGuard AI</h1><p>Insurance Claims Evidence Review Assistant</p></div></div>
+<div class="status"><span class="status-dot"></span>System Ready</div>
+</div></header>
 
 <main class="container">
+<section class="hero"><h2>Evidence-Based Claim Review</h2><p>Review motor insurance claims against policy coverage, required documentation, claim windows and supporting evidence.</p></section>
 
-    <section class="hero">
-        <h2>Evidence-Based Claim Review</h2>
-        <p>
-            Review motor insurance claims against policy coverage,
-            required documentation, claim windows and supporting evidence.
-        </p>
-    </section>
+<div class="tabs">
+<button id="demoTab" class="tab active">Demo Claims</button>
+<button id="newTab" class="tab">＋ New Claim Review</button>
+</div>
 
-    <section class="review-panel">
+<section id="demoPanel" class="panel">
+<h3>Review a predefined scenario</h3>
+<div class="selector-row">
+<select id="claimSelect"><option value="">Loading claims...</option></select>
+<button id="reviewButton" disabled>Review Claim</button>
+</div>
+<div id="claimDescription" class="claim-description">Select a claim to view its incident details.</div>
+</section>
 
-        <h3>Select a claim</h3>
+<section id="newPanel" class="panel new-form">
+<h3>New Claim Review</h3>
+<p style="color:#64748b;font-size:13px;margin:-7px 0 18px">Enter claim facts and available evidence. Policy violations are evaluated by the rules engine.</p>
+<form id="newClaimForm">
+<div class="form-grid">
+<div class="field"><label>Claim ID *</label><input id="newClaimId" placeholder="CLM-007" required><div class="hint">Example: CLM-007</div></div>
+<div class="field"><label>Claim Type *</label><select id="newClaimType" required><option value="ACCIDENT">ACCIDENT</option><option value="THEFT">THEFT</option><option value="NATURAL_EVENT">NATURAL_EVENT</option></select></div>
+<div class="field"><label>Incident Date *</label><input id="incidentDate" type="date" required></div>
+<div class="field"><label>Reported Date *</label><input id="reportedDate" type="date" required></div>
+<div class="field"><label>Claimed Amount (INR) *</label><input id="claimedAmount" type="number" min="1" step="0.01" placeholder="145000" required></div>
+<div class="field"><label>Damage Category *</label><select id="damageCategory" required>
+<option value="collision">collision</option><option value="theft">theft</option><option value="natural_event">natural_event</option><option value="mechanical_breakdown">mechanical_breakdown</option><option value="wear_and_tear">wear_and_tear</option><option value="internal_mechanical_failure">internal_mechanical_failure</option><option value="intentional_damage">intentional_damage</option><option value="unknown">unknown</option>
+</select></div>
+<div class="field full"><label>Incident Description *</label><textarea id="incidentDescription" minlength="20" placeholder="Describe what happened, when it happened, and the observed damage..." required></textarea></div>
+<div class="field full"><label>Claim Form Details *</label><textarea id="claimForm" placeholder="Claim form reference/details..." required></textarea></div>
+<div class="field" id="repairField"><label>Repair Estimate</label><textarea id="repairEstimate" placeholder="Repair estimate reference and amount..."></textarea></div>
+<div class="field" id="firField" style="display:none"><label>FIR</label><textarea id="fir" placeholder="FIR number and details..."></textarea></div>
+<div class="field full"><label>Additional Evidence</label><textarea id="additionalEvidence" placeholder="Photos, invoices, witness statement, other evidence..."></textarea></div>
+</div>
+<div class="form-actions"><button type="button" id="backButton" class="secondary">Back to Demo Claims</button><button type="submit">Review New Claim</button></div>
+</form>
+</section>
 
-        <div class="selector-row">
+<div id="errorMessage" class="error"></div>
+<div id="loading" class="loading"><span class="spinner"></span>Reviewing claim evidence with Gemini...</div>
 
-            <select id="claimSelect">
-                <option value="">Loading claims...</option>
-            </select>
-
-            <button id="reviewButton" disabled>
-                Review Claim
-            </button>
-
-        </div>
-
-        <div id="claimDescription" class="claim-description">
-            Select a claim to view its incident details.
-        </div>
-
-    </section>
-
-    <div id="errorMessage" class="error"></div>
-
-    <div id="loading" class="loading">
-        <span class="spinner"></span>
-        Reviewing claim evidence with Gemini...
-    </div>
-
-    <section id="results" class="results">
-
-        <div class="decision-card">
-
-            <div class="decision-header">
-                <h2 id="decisionTitle">Decision</h2>
-                <span id="decisionBadge" class="decision-badge"></span>
-            </div>
-
-            <p id="summary" class="summary"></p>
-
-        </div>
-
-        <h2 class="section-title">Findings</h2>
-
-        <div id="findings" class="findings-grid"></div>
-
-        <div id="missingSection" class="info-section" style="display:none;">
-            <h3>Missing Information</h3>
-            <ul id="missingInformation"></ul>
-        </div>
-
-        <div id="uncertaintySection" class="info-section" style="display:none;">
-            <h3>Uncertainty</h3>
-            <ul id="uncertainty"></ul>
-        </div>
-
-        <div class="info-section">
-
-            <h3>Retrieved Policy Sections</h3>
-
-            <div id="policySections" class="policy-list"></div>
-
-        </div>
-
-    </section>
-
+<section id="results" class="results">
+<div class="decision-card">
+<div class="decision-header"><h2 id="decisionTitle">Decision</h2><span id="decisionBadge" class="decision-badge"></span></div>
+<div class="meta"><span id="sourceChip" class="chip"></span><span id="claimChip" class="chip"></span></div>
+<p id="summary" class="summary"></p>
+</div>
+<h2 class="section-title">Findings</h2><div id="findings" class="findings-grid"></div>
+<div id="missingSection" class="info-section" style="display:none"><h3>Missing Information</h3><ul id="missingInformation"></ul></div>
+<div id="uncertaintySection" class="info-section" style="display:none"><h3>Uncertainty</h3><ul id="uncertainty"></ul></div>
+<div class="info-section"><h3>Retrieved Policy Sections</h3><div id="policySections" class="policy-list"></div></div>
+</section>
 </main>
-
-<footer>
-    ClaimGuard AI · Evidence-grounded insurance claim review
-</footer>
-
+<footer>ClaimGuard AI · Evidence-grounded insurance claim review</footer>
 
 <script>
-
-    const claimSelect = document.getElementById("claimSelect");
-    const reviewButton = document.getElementById("reviewButton");
-    const claimDescription = document.getElementById("claimDescription");
-
-    const loading = document.getElementById("loading");
-    const errorMessage = document.getElementById("errorMessage");
-    const results = document.getElementById("results");
-
-    let claims = [];
-
-
-    async function loadClaims() {
-
-        try {
-
-            const response = await fetch("/api/claims");
-
-            if (!response.ok) {
-                throw new Error("Unable to load claims.");
-            }
-
-            const data = await response.json();
-
-            claims = data.claims || [];
-
-            claimSelect.innerHTML = `
-                <option value="">Choose a claim...</option>
-            `;
-
-            claims.forEach(claim => {
-
-                const option = document.createElement("option");
-
-                option.value = claim.claim_id;
-
-                option.textContent =
-                    `${claim.claim_id} — ${claim.claim_type}`;
-
-                claimSelect.appendChild(option);
-
-            });
-
-        } catch (error) {
-
-            showError(error.message);
-
-        }
-
-    }
-
-
-    claimSelect.addEventListener("change", () => {
-
-        const claim = claims.find(
-            item => item.claim_id === claimSelect.value
-        );
-
-        if (!claim) {
-
-            reviewButton.disabled = true;
-
-            claimDescription.textContent =
-                "Select a claim to view its incident details.";
-
-            return;
-
-        }
-
-        reviewButton.disabled = false;
-
-        claimDescription.innerHTML = `
-            <strong>${escapeHtml(claim.claim_id)}</strong>
-            —
-            ${escapeHtml(claim.incident_description)}
-            <br><br>
-            <strong>Claimed Amount:</strong>
-            ₹${Number(claim.claimed_amount).toLocaleString("en-IN")}
-        `;
-
-        results.style.display = "none";
-
-    });
-
-
-    reviewButton.addEventListener("click", reviewClaim);
-
-
-    async function reviewClaim() {
-
-        const claimId = claimSelect.value;
-
-        if (!claimId) {
-            return;
-        }
-
-        loading.style.display = "block";
-        errorMessage.style.display = "none";
-        results.style.display = "none";
-
-        reviewButton.disabled = true;
-
-        try {
-
-            const response = await fetch("/api/review", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    claim_id: claimId
-                })
-
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.details || data.error || "Claim review failed."
-                );
-            }
-
-            displayResults(data);
-
-        } catch (error) {
-
-            showError(error.message);
-
-        } finally {
-
-            loading.style.display = "none";
-            reviewButton.disabled = false;
-
-        }
-
-    }
-
-
-    function displayResults(data) {
-
-        const review = data.final_review;
-
-        const decision = review.decision;
-
-        const badge = document.getElementById("decisionBadge");
-
-        badge.textContent = formatDecision(decision);
-
-        badge.className =
-            "decision-badge " + getDecisionClass(decision);
-
-        document.getElementById("summary").textContent =
-            review.summary || "No summary provided.";
-
-        displayFindings(review.findings || []);
-
-        displayList(
-            "missingSection",
-            "missingInformation",
-            review.missing_information || []
-        );
-
-        displayList(
-            "uncertaintySection",
-            "uncertainty",
-            review.uncertainty || []
-        );
-
-        displayPolicySections(
-            data.policy_sections || []
-        );
-
-        results.style.display = "block";
-
-        window.scrollTo({
-            top: results.offsetTop - 20,
-            behavior: "smooth"
-        });
-
-    }
-
-
-    function displayFindings(findings) {
-
-        const container = document.getElementById("findings");
-
-        container.innerHTML = "";
-
-        if (findings.length === 0) {
-
-            container.innerHTML = `
-                <div class="finding">
-                    <p>No material findings were returned.</p>
-                </div>
-            `;
-
-            return;
-        }
-
-        findings.forEach(finding => {
-
-            const card = document.createElement("div");
-
-            card.className = "finding";
-
-            const evidenceHtml =
-                (finding.evidence || [])
-                .map(item => `
-                    <div class="evidence">
-
-                        <div class="evidence-label">
-                            ${escapeHtml(item.source)}
-                        </div>
-
-                        <div class="evidence-reference">
-                            ${escapeHtml(item.reference)}
-                        </div>
-
-                        <div class="evidence-quote">
-                            "${escapeHtml(item.quote)}"
-                        </div>
-
-                    </div>
-                `)
-                .join("");
-
-            card.innerHTML = `
-
-                <div class="finding-top">
-
-                    <div class="finding-type">
-                        ${escapeHtml(
-                            formatFindingType(finding.type)
-                        )}
-                    </div>
-
-                    <span class="severity">
-                        ${escapeHtml(finding.severity)}
-                    </span>
-
-                </div>
-
-                <div class="finding-message">
-                    ${escapeHtml(finding.message)}
-                </div>
-
-                ${
-                    finding.policy_clause
-                    ? `
-                        <div class="policy-clause">
-                            📜 ${escapeHtml(finding.policy_clause)}
-                        </div>
-                    `
-                    : ""
-                }
-
-                ${evidenceHtml}
-
-            `;
-
-            container.appendChild(card);
-
-        });
-
-    }
-
-
-    function displayList(
-        sectionId,
-        listId,
-        items
-    ) {
-
-        const section = document.getElementById(sectionId);
-        const list = document.getElementById(listId);
-
-        list.innerHTML = "";
-
-        if (!items.length) {
-
-            section.style.display = "none";
-
-            return;
-
-        }
-
-        items.forEach(item => {
-
-            const li = document.createElement("li");
-
-            li.textContent = item;
-
-            list.appendChild(li);
-
-        });
-
-        section.style.display = "block";
-
-    }
-
-
-    function displayPolicySections(sections) {
-
-        const container =
-            document.getElementById("policySections");
-
-        container.innerHTML = "";
-
-        sections.forEach(section => {
-
-            const item = document.createElement("div");
-
-            item.className = "policy-item";
-
-            item.innerHTML = `
-                <strong>
-                    Section ${escapeHtml(section.section_id)}:
-                    ${escapeHtml(section.title)}
-                </strong>
-
-                <span class="policy-score">
-                    ${Number(section.score).toFixed(4)}
-                </span>
-            `;
-
-            container.appendChild(item);
-
-        });
-
-    }
-
-
-    function formatDecision(decision) {
-
-        return decision
-            .replaceAll("_", " ");
-
-    }
-
-
-    function formatFindingType(type) {
-
-        return type
-            .replaceAll("_", " ");
-
-    }
-
-
-    function getDecisionClass(decision) {
-
-        switch (decision) {
-
-            case "APPROVE":
-                return "approve";
-
-            case "REJECT":
-                return "reject";
-
-            case "REQUEST_INFORMATION":
-                return "request";
-
-            case "ESCALATE":
-                return "escalate";
-
-            default:
-                return "";
-
-        }
-
-    }
-
-
-    function showError(message) {
-
-        errorMessage.textContent = message;
-
-        errorMessage.style.display = "block";
-
-    }
-
-
-    function escapeHtml(value) {
-
-        const div = document.createElement("div");
-
-        div.textContent = value ?? "";
-
-        return div.innerHTML;
-
-    }
-
-
-    loadClaims();
-
+const $=id=>document.getElementById(id);
+let claims=[];
+const claimSelect=$("claimSelect"), reviewButton=$("reviewButton");
+
+async function loadClaims(){
+ try{
+  const r=await fetch("/api/claims"); if(!r.ok) throw new Error("Unable to load claims.");
+  claims=(await r.json()).claims||[];
+  claimSelect.innerHTML='<option value="">Choose a claim...</option>';
+  claims.forEach(c=>{let o=document.createElement("option");o.value=c.claim_id;o.textContent=`${c.claim_id} — ${c.claim_type}`;claimSelect.appendChild(o)});
+ }catch(e){showError(e.message)}
+}
+claimSelect.addEventListener("change",()=>{
+ const c=claims.find(x=>x.claim_id===claimSelect.value);
+ if(!c){reviewButton.disabled=true;$("claimDescription").textContent="Select a claim to view its incident details.";return}
+ reviewButton.disabled=false;
+ $("claimDescription").innerHTML=`<strong>${escapeHtml(c.claim_id)}</strong> — ${escapeHtml(c.incident_description)}<br><br><strong>Claimed Amount:</strong> ₹${Number(c.claimed_amount).toLocaleString("en-IN")}`;
+ $("results").style.display="none";
+});
+reviewButton.addEventListener("click",()=>reviewExisting(claimSelect.value));
+
+async function reviewExisting(id){await sendReview("/api/review",{claim_id:id})}
+$("newClaimForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const data={
+  claim_id:$("newClaimId").value,claim_type:$("newClaimType").value,
+  incident_date:$("incidentDate").value,reported_date:$("reportedDate").value,
+  claimed_amount:$("claimedAmount").value,damage_category:$("damageCategory").value,
+  incident_description:$("incidentDescription").value,claim_form:$("claimForm").value,
+  repair_estimate:$("repairEstimate").value,fir:$("fir").value,
+  additional_evidence:$("additionalEvidence").value
+ };
+ await sendReview("/api/review-new",data);
+});
+
+async function sendReview(url,body){
+ $("loading").style.display="block";$("errorMessage").style.display="none";$("results").style.display="none";
+ try{
+  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const d=await r.json();if(!r.ok)throw new Error(d.details||d.error||"Claim review failed.");
+  displayResults(d);
+ }catch(e){showError(e.message)}finally{$("loading").style.display="none"}
+}
+function displayResults(data){
+ const review=data.final_review;
+ if(data.review_source==="deterministic_fallback") showError(data.ai_error||"Gemini unavailable. Showing deterministic policy review.");
+ else $("errorMessage").style.display="none";
+ $("decisionBadge").textContent=formatDecision(review.decision);
+ $("decisionBadge").className="decision-badge "+getDecisionClass(review.decision);
+ $("sourceChip").textContent=data.review_source==="gemini"?"✓ Gemini + deterministic checks":"⚠ Deterministic fallback";
+ $("claimChip").textContent=data.claim_id||"Claim";
+ $("summary").textContent=review.summary||"No summary provided.";
+ displayFindings(review.findings||[]);
+ displayList("missingSection","missingInformation",review.missing_information||[]);
+ displayList("uncertaintySection","uncertainty",review.uncertainty||[]);
+ displayPolicySections(data.policy_sections||[]);
+ $("results").style.display="block";
+ window.scrollTo({top:$("results").offsetTop-15,behavior:"smooth"});
+}
+function displayFindings(findings){
+ const c=$("findings");c.innerHTML="";
+ if(!findings.length){c.innerHTML='<div class="finding"><p>No material findings were returned.</p></div>';return}
+ findings.forEach(f=>{
+  const card=document.createElement("div");card.className="finding";
+  const ev=(f.evidence||[]).map(x=>`<div class="evidence"><div class="evidence-label">${escapeHtml(x.source)}</div><div class="evidence-reference">${escapeHtml(x.reference)}</div><div class="evidence-quote">"${escapeHtml(x.quote)}"</div></div>`).join("");
+  card.innerHTML=`<div class="finding-top"><div class="finding-type">${escapeHtml(formatFindingType(f.type))}</div><span class="severity">${escapeHtml(f.severity)}</span></div><div class="finding-message">${escapeHtml(f.message)}</div>${f.policy_clause?`<div class="policy-clause">📜 ${escapeHtml(f.policy_clause)}</div>`:""}${ev}`;
+  c.appendChild(card);
+ });
+}
+function displayList(sectionId,listId,items){
+ const s=$(sectionId),l=$(listId);l.innerHTML="";if(!items.length){s.style.display="none";return}
+ items.forEach(x=>{let li=document.createElement("li");li.textContent=x;l.appendChild(li)});s.style.display="block";
+}
+function displayPolicySections(sections){
+ const c=$("policySections");c.innerHTML="";
+ if(!sections.length){c.innerHTML='<div class="policy-item"><span>Policy retrieval unavailable in fallback mode.</span></div>';return}
+ sections.forEach(s=>{let d=document.createElement("div");d.className="policy-item";d.innerHTML=`<strong>Section ${escapeHtml(s.section_id)}: ${escapeHtml(s.title)}</strong><span class="policy-score">${Number(s.score).toFixed(4)}</span>`;c.appendChild(d)});
+}
+function formatDecision(x){return x.replaceAll("_"," ")}
+function formatFindingType(x){return x.replaceAll("_"," ")}
+function getDecisionClass(x){return {APPROVE:"approve",REJECT:"reject",REQUEST_INFORMATION:"request",ESCALATE:"escalate"}[x]||""}
+function showError(m){$("errorMessage").textContent=m;$("errorMessage").style.display="block"}
+function escapeHtml(v){const d=document.createElement("div");d.textContent=v??"";return d.innerHTML}
+
+$("demoTab").onclick=()=>{showTab("demo")};$("newTab").onclick=()=>{showTab("new")};$("backButton").onclick=()=>showTab("demo");
+function showTab(tab){
+ const demo=tab==="demo";$("demoPanel").style.display=demo?"block":"none";$("newPanel").style.display=demo?"none":"block";
+ $("demoTab").classList.toggle("active",demo);$("newTab").classList.toggle("active",!demo);$("results").style.display="none";$("errorMessage").style.display="none";
+}
+$("newClaimType").addEventListener("change",()=>{
+ const theft=$("newClaimType").value==="THEFT";
+ $("firField").style.display=theft?"block":"none";$("repairField").style.display=theft?"none":"block";
+});
+loadClaims();
 </script>
-
 </body>
 </html>
