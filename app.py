@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
 
@@ -6,6 +8,100 @@ from src.service import ClaimReviewService, CLAIMS_PATH
 from src.validation import validate_new_claim
 from src.document_parser import extract_document_text
 
+
+# ============================================================
+# Environment configuration
+# ============================================================
+
+def load_gemini_api_key():
+    """
+    Load GEMINI_API_KEY automatically.
+
+    Priority:
+    1. Existing environment variable
+    2. .env
+    3. .env.example
+
+    This allows the reviewer to simply add their API key to
+    .env.example and run:
+
+        python app.py
+    """
+
+    # If the environment variable already exists, keep it.
+    if os.getenv("GEMINI_API_KEY"):
+        return
+
+    project_root = Path(__file__).resolve().parent
+
+    env_files = [
+        project_root / ".env",
+        project_root / ".env.example"
+    ]
+
+    for env_file in env_files:
+
+        if not env_file.exists():
+            continue
+
+        try:
+
+            with env_file.open(
+                "r",
+                encoding="utf-8"
+            ) as file:
+
+                for line in file:
+
+                    line = line.strip()
+
+                    # Ignore empty lines and comments
+                    if not line or line.startswith("#"):
+                        continue
+
+                    if not line.startswith(
+                        "GEMINI_API_KEY="
+                    ):
+                        continue
+
+                    key = line.split(
+                        "=",
+                        1
+                    )[1].strip()
+
+                    # Remove optional quotes
+                    key = key.strip(
+                        "\"'"
+                    )
+
+                    # Ignore placeholder values
+                    if not key:
+                        continue
+
+                    if key in {
+                        "YOUR_GEMINI_API_KEY",
+                        "YOUR_API_KEY",
+                        "PASTE_YOUR_API_KEY_HERE"
+                    }:
+                        continue
+
+                    os.environ[
+                        "GEMINI_API_KEY"
+                    ] = key
+
+                    return
+
+        except OSError:
+            continue
+
+
+# Load API key BEFORE creating ClaimReviewService.
+load_gemini_api_key()
+
+
+# ============================================================
+# Flask application
+# ============================================================
 
 app = Flask(
     __name__,
@@ -15,6 +111,10 @@ app = Flask(
 
 service = ClaimReviewService()
 
+
+# ============================================================
+# Routes
+# ============================================================
 
 @app.get("/")
 def home():
@@ -42,10 +142,12 @@ def list_claims():
         CLAIMS_PATH.glob("claim_*.json")
     ):
         try:
+
             with claim_file.open(
                 "r",
                 encoding="utf-8"
             ) as file:
+
                 claim = json.load(file)
 
             claims.append({
@@ -119,7 +221,8 @@ def review_claim():
 @app.post("/api/review-new")
 def review_new_claim():
     """
-    Validate and review a completely new claim supplied by the user.
+    Validate and review a completely new claim supplied
+    by the user.
 
     Supports PDF/TXT evidence uploads.
     """
@@ -131,12 +234,24 @@ def review_new_claim():
         # ----------------------------------------------------
 
         data = {
-            "claim_id": request.form.get("claim_id"),
-            "claim_type": request.form.get("claim_type"),
-            "incident_date": request.form.get("incident_date"),
-            "reported_date": request.form.get("reported_date"),
-            "claim_amount": request.form.get("claim_amount"),
-            "damage_category": request.form.get("damage_category"),
+            "claim_id": request.form.get(
+                "claim_id"
+            ),
+            "claim_type": request.form.get(
+                "claim_type"
+            ),
+            "incident_date": request.form.get(
+                "incident_date"
+            ),
+            "reported_date": request.form.get(
+                "reported_date"
+            ),
+            "claim_amount": request.form.get(
+                "claim_amount"
+            ),
+            "damage_category": request.form.get(
+                "damage_category"
+            ),
             "incident_description": request.form.get(
                 "incident_description"
             ),
@@ -231,7 +346,9 @@ def review_new_claim():
             claim
         )
 
-        result["input_source"] = "uploaded_documents"
+        result["input_source"] = (
+            "uploaded_documents"
+        )
 
         return jsonify(result)
 
@@ -248,6 +365,10 @@ def review_new_claim():
             "details": str(error)
         }), 500
 
+
+# ============================================================
+# Application entry point
+# ============================================================
 
 if __name__ == "__main__":
 
