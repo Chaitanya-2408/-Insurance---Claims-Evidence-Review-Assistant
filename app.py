@@ -1,6 +1,8 @@
+import json
+
 from flask import Flask, jsonify, request, send_from_directory
 
-from src.service import ClaimReviewService
+from src.service import ClaimReviewService, CLAIMS_PATH
 
 
 app = Flask(__name__, static_folder="static")
@@ -23,8 +25,36 @@ def health():
 
 @app.get("/api/claims")
 def list_claims():
+    """Return the available claims for review."""
+
+    claims = []
+
+    for claim_file in sorted(
+        CLAIMS_PATH.glob("claim_*.json")
+    ):
+        try:
+            with claim_file.open(
+                "r",
+                encoding="utf-8"
+            ) as file:
+                claim = json.load(file)
+
+            claims.append({
+                "claim_id": claim["claim_id"],
+                "claim_type": claim["claim_type"],
+                "incident_description": claim[
+                    "incident_description"
+                ],
+                "claimed_amount": claim[
+                    "claimed_amount"
+                ]
+            })
+
+        except (OSError, json.JSONDecodeError, KeyError):
+            continue
+
     return jsonify({
-        "message": "Claim listing endpoint will be implemented next."
+        "claims": claims
     })
 
 
