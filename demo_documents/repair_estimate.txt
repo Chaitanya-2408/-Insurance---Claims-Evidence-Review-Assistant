@@ -1,0 +1,26 @@
+VEHICLE REPAIR ESTIMATE
+ClaimGuard AI Demonstration Document
+
+Estimate Number: EST-DEMO-001
+Claim Number: CLM-DEMO-001
+Vehicle Registration: AP-DEMO-2408
+Vehicle: Demo Sedan
+Estimate Date: 22-Aug-2026
+
+Repair Items:
+1. Front bumper replacement                 INR 35,000
+2. Front fender repair                      INR 28,000
+3. Headlamp replacement                     INR 32,000
+4. Bonnet repair and painting               INR 30,000
+5. Labour and alignment                     INR 20,000
+
+TOTAL ESTIMATED REPAIR COST:                INR 145,000
+
+Cause of Damage:
+Accidental collision with a stationary object.
+
+The estimate relates to the accidental damage described in the associated
+claim form and incident description.
+
+DOCUMENT STATUS: DEMONSTRATION / TEST INPUT ONLY
+All names, numbers and amounts in this document are fictional.

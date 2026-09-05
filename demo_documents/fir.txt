@@ -1,0 +1,23 @@
+FIRST INFORMATION REPORT (FIR)
+ClaimGuard AI Demonstration Document
+
+FIR Number: FIR-DEMO-001
+Claim Number: CLM-DEMO-001
+Police Station: Demonstration Police Station
+Date of Report: 22-Aug-2026
+
+Complainant: Demo Customer
+Vehicle Registration: AP-DEMO-2408
+
+Incident Summary:
+
+This demonstration FIR records an accidental motor vehicle collision reported
+by the complainant. On 20-Aug-2026, the vehicle collided with a stationary
+object in a parking area and sustained damage to the front portion of the
+vehicle.
+
+The report is included to demonstrate the document-upload capability of
+ClaimGuard AI.
+
+DOCUMENT STATUS: DEMONSTRATION / TEST INPUT ONLY
+This is fictional evidence and is not an official police document.

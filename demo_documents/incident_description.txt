@@ -1,0 +1,23 @@
+INCIDENT DESCRIPTION
+ClaimGuard AI Demonstration Document
+
+Claim Number: CLM-DEMO-001
+Date of Incident: 20-Aug-2026
+Date Reported: 22-Aug-2026
+
+Incident Narrative:
+
+On 20-Aug-2026, the insured vehicle was being used for normal personal
+transport. While manoeuvring in a parking area, the vehicle accidentally
+collided with a stationary concrete pillar.
+
+The collision caused damage to the front bumper, front fender, headlamp and
+bonnet. No intentional damage was involved. The vehicle was not being used
+for any unauthorized purpose, and the driver was not under the influence of
+alcohol or prohibited substances.
+
+The incident was reported to the insurer on 22-Aug-2026, two calendar days
+after the incident.
+
+DOCUMENT STATUS: DEMONSTRATION / TEST INPUT ONLY
+This is fictional evidence prepared for testing the ClaimGuard AI workflow.
