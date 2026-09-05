@@ -3,202 +3,2532 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>ClaimGuard AI</title>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,Arial,sans-serif;background:#f1f5f9;color:#0f172a;min-height:100vh}
-.container{width:min(1240px,94%);margin:auto}
-header{background:#0f172a;color:#fff;padding:18px 0;box-shadow:0 3px 12px #0002}
-.header-content{display:flex;justify-content:space-between;align-items:center;gap:20px}
-.brand{display:flex;align-items:center;gap:12px}.brand-icon{font-size:30px}
-.brand h1{font-size:23px}.brand p{color:#94a3b8;font-size:12px;margin-top:3px}
-.status{display:flex;align-items:center;gap:8px;font-size:13px;color:#a7f3d0}
-.status-dot{width:9px;height:9px;border-radius:50%;background:#10b981}
-main{padding:30px 0 50px}.hero{margin-bottom:22px}.hero h2{font-size:29px;margin-bottom:7px}.hero p{color:#64748b;line-height:1.6}
-.tabs{display:flex;gap:8px;margin-bottom:16px}.tab{background:#e2e8f0;color:#334155;border:0;padding:10px 16px;border-radius:8px;font-weight:700}.tab.active{background:#2563eb;color:white}
-.panel{background:#fff;border-radius:14px;padding:23px;box-shadow:0 3px 15px #0f172a12;margin-bottom:22px}
-.panel h3{margin-bottom:16px}.selector-row{display:flex;gap:12px}
-select,input,textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff;color:#0f172a}
-textarea{min-height:105px;resize:vertical}.selector-row select{flex:1}
-button{border:0;border-radius:8px;padding:12px 20px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
-button:hover{background:#1d4ed8}button:disabled{background:#94a3b8;cursor:not-allowed}
-.secondary{background:#e2e8f0;color:#334155}.secondary:hover{background:#cbd5e1}
-.claim-description{margin-top:14px;padding:13px;background:#f8fafc;border-radius:8px;color:#475569;font-size:14px;line-height:1.5}
-.new-form{display:none}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.field.full{grid-column:1/-1}.field label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:6px}.hint{font-size:11px;color:#94a3b8;margin-top:4px}
-.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
-.loading{display:none;margin:20px 0;text-align:center;color:#475569}.spinner{display:inline-block;width:18px;height:18px;border:3px solid #cbd5e1;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}@keyframes spin{to{transform:rotate(360deg)}}
-.error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;margin-bottom:18px}
-.results{display:none}.decision-card{background:#fff;border-radius:14px;padding:23px;box-shadow:0 3px 15px #0f172a12;margin-bottom:20px}
-.decision-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}.decision-badge{padding:8px 15px;border-radius:20px;font-weight:800;font-size:13px}
-.approve{background:#dcfce7;color:#166534}.reject{background:#fee2e2;color:#991b1b}.request{background:#fef3c7;color:#92400e}.escalate{background:#ede9fe;color:#5b21b6}
-.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.chip{background:#f1f5f9;padding:6px 10px;border-radius:999px;font-size:11px;color:#475569;font-weight:700}.summary{color:#475569;line-height:1.7}
-.section-title{font-size:19px;margin:20px 0 13px}.findings-grid{display:grid;gap:13px}.finding{background:#fff;border-radius:12px;padding:18px;box-shadow:0 3px 12px #0f172a0f;border-left:4px solid #64748b}
-.finding-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px}.finding-type{font-weight:800;font-size:15px}.severity{font-size:10px;font-weight:800;padding:5px 8px;border-radius:12px;background:#f1f5f9}.finding-message{color:#475569;line-height:1.55;margin-bottom:12px}
-.policy-clause{font-size:12px;font-weight:800;color:#334155;margin-bottom:9px}.evidence{background:#f8fafc;border-radius:8px;padding:11px;margin-top:7px}.evidence-label{font-size:11px;font-weight:800;color:#64748b}.evidence-reference{font:11px monospace;color:#334155;margin-top:3px}.evidence-quote{font-size:12px;color:#475569;margin-top:3px;line-height:1.45}
-.info-section{background:#fff;border-radius:12px;padding:18px;margin-top:17px;box-shadow:0 3px 12px #0f172a0f}.info-section ul{padding-left:20px;color:#475569;line-height:1.8}
-.policy-list{display:grid;gap:9px}.policy-item{display:flex;justify-content:space-between;gap:15px;padding:11px 13px;background:#f8fafc;border-radius:8px;font-size:13px}.policy-score{font:12px monospace;color:#64748b}
-footer{text-align:center;color:#94a3b8;font-size:11px;padding:18px 0 30px}
-@media(max-width:700px){.header-content,.selector-row,.decision-header{align-items:flex-start;flex-direction:column}.selector-row button,.form-actions button{width:100%}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.form-actions{flex-direction:column}}
+:root{
+    --bg:#07111f;
+    --panel:#0d1a2b;
+    --panel2:#101f33;
+    --border:#24364d;
+    --text:#e7eef8;
+    --muted:#91a4bc;
+    --blue:#60a5fa;
+    --green:#34d399;
+    --red:#fb7185;
+    --amber:#fbbf24;
+    --shadow:0 14px 40px rgba(0,0,0,.25);
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:
+        radial-gradient(circle at top right,rgba(59,130,246,.10),transparent 30%),
+        radial-gradient(circle at bottom left,rgba(16,185,129,.06),transparent 28%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+
+button,
+input,
+select,
+textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.shell{
+    max-width:1400px;
+    margin:auto;
+    padding:24px;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:44px;
+    height:44px;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:#12243a;
+    border:1px solid var(--border);
+    color:#bfdbfe;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+h1{
+    margin:0;
+    font-size:22px;
+}
+
+.subtitle{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.status{
+    border:1px solid var(--border);
+    background:#0b1728;
+    padding:8px 12px;
+    border-radius:999px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.status.ok{
+    color:#86efac;
+    border-color:rgba(52,211,153,.25);
+    background:rgba(52,211,153,.06);
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:16px;
+}
+
+.stat{
+    background:rgba(13,26,43,.9);
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:14px;
+    box-shadow:var(--shadow);
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+}
+
+.stat-value{
+    margin-top:6px;
+    font-size:19px;
+    font-weight:850;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:16px;
+}
+
+.card{
+    background:rgba(13,26,43,.92);
+    border:1px solid var(--border);
+    border-radius:15px;
+    box-shadow:var(--shadow);
+    padding:17px;
+}
+
+.tabs{
+    display:flex;
+    gap:7px;
+    margin-bottom:15px;
+}
+
+.tab{
+    flex:1;
+    border:1px solid var(--border);
+    background:#0b1728;
+    color:var(--muted);
+    border-radius:9px;
+    padding:9px;
+    font-size:12px;
+    font-weight:750;
+}
+
+.tab.active{
+    color:var(--text);
+    border-color:var(--blue);
+    background:#12243a;
+}
+
+.section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.section-title h2{
+    margin:0;
+    font-size:15px;
+}
+
+.pill{
+    display:inline-block;
+    border:1px solid var(--border);
+    color:#a9bdd5;
+    background:#0a1626;
+    border-radius:999px;
+    padding:4px 8px;
+    font-size:10px;
+    font-weight:800;
+}
+
+.headnote{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.5;
+}
+
+.hint{
+    margin:8px 0 12px;
+    color:#9fb2c9;
+    font-size:11px;
+    line-height:1.45;
+}
+
+label{
+    display:block;
+    margin:12px 0 6px;
+    color:#b7c8db;
+    font-size:11px;
+    font-weight:750;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    border:1px solid var(--border);
+    background:#081525;
+    color:var(--text);
+    border-radius:9px;
+    padding:10px;
+    outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#3b82f6;
+}
+
+textarea{
+    min-height:82px;
+    resize:vertical;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.btn{
+    width:100%;
+    margin-top:13px;
+    border:1px solid rgba(96,165,250,.35);
+    background:#17345a;
+    color:#dbeafe;
+    border-radius:9px;
+    padding:10px 12px;
+    font-weight:800;
+}
+
+.btn:hover{
+    background:#1c416e;
+}
+
+.btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+.btn.secondary{
+    background:#0b1728;
+    border-color:var(--border);
+    color:#b7c8db;
+}
+
+.notice{
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:9px;
+    display:none;
+    font-size:12px;
+    line-height:1.45;
+}
+
+.notice.error{
+    display:block;
+    color:#fecdd3;
+    background:rgba(251,113,133,.08);
+    border:1px solid rgba(251,113,133,.22);
+}
+
+.notice.info{
+    display:block;
+    color:#bfdbfe;
+    background:rgba(96,165,250,.08);
+    border:1px solid rgba(96,165,250,.18);
+}
+
+.hidden{
+    display:none !important;
+}
+
+.empty{
+    padding:40px 20px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.result{
+    display:none;
+}
+
+.decision{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:16px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:#0b1728;
+    margin-bottom:12px;
+}
+
+.decision.approve{
+    border-color:rgba(52,211,153,.35);
+}
+
+.decision.reject{
+    border-color:rgba(251,113,133,.35);
+}
+
+.decision.request_information,
+.decision.escalate{
+    border-color:rgba(251,191,36,.35);
+}
+
+.decision-source{
+    color:var(--muted);
+    font-size:11px;
+    text-align:right;
+    white-space:pre-line;
+}
+
+.summary{
+    padding:14px;
+    background:rgba(94,234,212,.05);
+    border:1px solid rgba(94,234,212,.16);
+    border-radius:12px;
+    margin-bottom:17px;
+    line-height:1.6;
+    font-size:13px;
+}
+
+.findings{
+    display:grid;
+    gap:10px;
+}
+
+.finding-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:13px;
+    background:rgba(10,21,37,.75);
+}
+
+.finding-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.finding-header strong{
+    font-size:12px;
+}
+
+.finding-card p{
+    margin:8px 0;
+    font-size:12px;
+    line-height:1.55;
+    color:#d7e2f0;
+}
+
+.finding-severity{
+    font-size:9px;
+    text-transform:uppercase;
+    font-weight:850;
+    padding:4px 7px;
+    border-radius:999px;
+    background:#18273a;
+    color:#b9cbe0;
+}
+
+.evidence-list{
+    display:grid;
+    gap:7px;
+    margin-top:8px;
+}
+
+.evidence-item{
+    padding:8px 10px;
+    border-radius:8px;
+    background:#0a1525;
+    border-left:2px solid var(--blue);
+    font-size:11px;
+}
+
+.evidence-item strong{
+    display:block;
+    color:#bfdbfe;
+    margin-bottom:3px;
+}
+
+.evidence-item span{
+    display:block;
+    color:#9fb2c9;
+    line-height:1.45;
+}
+
+.empty-findings{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#0a1525;
+    color:#91a4bc;
+    font-size:12px;
+}
+
+/* ----------------------------------------------------------
+   Reviewer-friendly Structured Review
+---------------------------------------------------------- */
+
+.review-overview{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-top:10px;
+}
+
+.review-stat{
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#101d30;
+}
+
+.review-stat-label{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.review-stat strong{
+    display:block;
+    margin-top:6px;
+    font-size:18px;
+}
+
+.review-detail{
+    margin-top:12px;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#101d30;
+    line-height:1.6;
+    font-size:13px;
+}
+
+.review-detail-title{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    margin-bottom:8px;
+    font-weight:800;
+}
+
+.review-ok{
+    color:#91a4bc;
+}
+
+.review-list{
+    margin:0;
+    padding-left:20px;
+    line-height:1.8;
+}
+
+/* ----------------------------------------------------------
+   Policy references
+---------------------------------------------------------- */
+
+.policy-section{
+    margin-top:12px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#0c192a;
+}
+
+.policy-section-title{
+    font-size:12px;
+    font-weight:800;
+}
+
+.policy-section-meta{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+@media(max-width:1000px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:700px){
+
+    .review-overview{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:520px){
+
+    .shell{
+        padding:14px;
+    }
+
+    header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .review-overview{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .decision{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .decision-source{
+        text-align:left;
+    }
+}
 </style>
 </head>
+
 <body>
-<header><div class="container header-content">
-<div class="brand"><div class="brand-icon">🛡️</div><div><h1>ClaimGuard AI</h1><p>Insurance Claims Evidence Review Assistant</p></div></div>
-<div class="status"><span class="status-dot"></span>System Ready</div>
-</div></header>
 
-<main class="container">
-<section class="hero"><h2>Evidence-Based Claim Review</h2><p>Review motor insurance claims against policy coverage, required documentation, claim windows and supporting evidence.</p></section>
+<div class="shell">
 
-<div class="tabs">
-<button id="demoTab" class="tab active">Demo Claims</button>
-<button id="newTab" class="tab">＋ New Claim Review</button>
-</div>
+<header>
 
-<section id="demoPanel" class="panel">
-<h3>Review a predefined scenario</h3>
-<div class="selector-row">
-<select id="claimSelect"><option value="">Loading claims...</option></select>
-<button id="reviewButton" disabled>Review Claim</button>
-</div>
-<div id="claimDescription" class="claim-description">Select a claim to view its incident details.</div>
+    <div class="brand">
+
+        <div class="logo">
+            CG
+        </div>
+
+        <div>
+            <h1>ClaimGuard AI</h1>
+            <div class="subtitle">
+                Insurance Claims Evidence Review Assistant
+            </div>
+        </div>
+
+    </div>
+
+    <div id="healthStatus" class="status">
+        Checking backend…
+    </div>
+
+</header>
+
+
+<!-- ==========================================================
+     DASHBOARD STATS
+=========================================================== -->
+
+<section class="stats">
+
+    <div class="stat">
+        <div class="stat-label">
+            Demo Claims
+        </div>
+
+        <div id="statClaims" class="stat-value">
+            —
+        </div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">
+            Policy
+        </div>
+
+        <div class="stat-value">
+            v1.0
+        </div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">
+            IDV Limit
+        </div>
+
+        <div class="stat-value">
+            ₹5L
+        </div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-label">
+            Decision Engine
+        </div>
+
+        <div class="stat-value">
+            Rules + AI
+        </div>
+    </div>
+
 </section>
 
-<section id="newPanel" class="panel new-form">
-<h3>New Claim Review</h3>
-<p style="color:#64748b;font-size:13px;margin:-7px 0 18px">Enter claim facts and available evidence. Policy violations are evaluated by the rules engine.</p>
-<form id="newClaimForm">
-<div class="form-grid">
-<div class="field"><label>Claim ID *</label><input id="newClaimId" placeholder="CLM-007" required><div class="hint">Example: CLM-007</div></div>
-<div class="field"><label>Claim Type *</label><select id="newClaimType" required><option value="ACCIDENT">ACCIDENT</option><option value="THEFT">THEFT</option><option value="NATURAL_EVENT">NATURAL_EVENT</option></select></div>
-<div class="field"><label>Incident Date *</label><input id="incidentDate" type="date" required></div>
-<div class="field"><label>Reported Date *</label><input id="reportedDate" type="date" required></div>
-<div class="field"><label>Claimed Amount (INR) *</label><input id="claimedAmount" type="number" min="1" step="0.01" placeholder="145000" required></div>
-<div class="field"><label>Damage Category *</label><select id="damageCategory" required>
-<option value="collision">collision</option><option value="theft">theft</option><option value="natural_event">natural_event</option><option value="mechanical_breakdown">mechanical_breakdown</option><option value="wear_and_tear">wear_and_tear</option><option value="internal_mechanical_failure">internal_mechanical_failure</option><option value="intentional_damage">intentional_damage</option><option value="unknown">unknown</option>
-</select></div>
-<div class="field full"><label>Incident Description *</label><textarea id="incidentDescription" minlength="20" placeholder="Describe what happened, when it happened, and the observed damage..." required></textarea></div>
-<div class="field full"><label>Claim Form Details *</label><textarea id="claimForm" placeholder="Claim form reference/details..." required></textarea></div>
-<div class="field" id="repairField"><label>Repair Estimate</label><textarea id="repairEstimate" placeholder="Repair estimate reference and amount..."></textarea></div>
-<div class="field" id="firField" style="display:none"><label>FIR</label><textarea id="fir" placeholder="FIR number and details..."></textarea></div>
-<div class="field full"><label>Additional Evidence</label><textarea id="additionalEvidence" placeholder="Photos, invoices, witness statement, other evidence..."></textarea></div>
-</div>
-<div class="form-actions"><button type="button" id="backButton" class="secondary">Back to Demo Claims</button><button type="submit">Review New Claim</button></div>
-</form>
-</section>
 
-<div id="errorMessage" class="error"></div>
-<div id="loading" class="loading"><span class="spinner"></span>Reviewing claim evidence with Gemini...</div>
+<div class="grid">
 
-<section id="results" class="results">
-<div class="decision-card">
-<div class="decision-header"><h2 id="decisionTitle">Decision</h2><span id="decisionBadge" class="decision-badge"></span></div>
-<div class="meta"><span id="sourceChip" class="chip"></span><span id="claimChip" class="chip"></span></div>
-<p id="summary" class="summary"></p>
-</div>
-<h2 class="section-title">Findings</h2><div id="findings" class="findings-grid"></div>
-<div id="missingSection" class="info-section" style="display:none"><h3>Missing Information</h3><ul id="missingInformation"></ul></div>
-<div id="uncertaintySection" class="info-section" style="display:none"><h3>Uncertainty</h3><ul id="uncertainty"></ul></div>
-<div class="info-section"><h3>Retrieved Policy Sections</h3><div id="policySections" class="policy-list"></div></div>
-</section>
+
+<!-- ==========================================================
+     LEFT PANEL
+=========================================================== -->
+
+<aside class="card">
+
+    <div class="tabs">
+
+        <button
+            id="tabDemo"
+            class="tab active"
+            type="button">
+            Demo Claims
+        </button>
+
+        <button
+            id="tabNew"
+            class="tab"
+            type="button">
+            Review New
+        </button>
+
+    </div>
+
+
+    <!-- ======================================================
+         DEMO CLAIMS
+    ======================================================= -->
+
+    <div id="demoPanel">
+
+        <div class="section-title">
+
+            <h2>
+                Select claim
+            </h2>
+
+            <span class="pill">
+                6 scenarios
+            </span>
+
+        </div>
+
+        <p class="headnote">
+            Seeded claims for approval, rejection, missing evidence,
+            late reporting and escalation.
+        </p>
+
+        <select id="claimSelect">
+            <option value="">
+                Loading claims...
+            </option>
+        </select>
+
+        <div
+            id="demoDescription"
+            class="hint">
+            Select a claim to see its scenario.
+        </div>
+
+        <button
+            id="reviewDemoBtn"
+            class="btn"
+            type="button">
+            Review Selected Claim
+        </button>
+
+    </div>
+
+
+    <!-- ======================================================
+         NEW CLAIM
+    ======================================================= -->
+
+    <div
+        id="newPanel"
+        class="hidden">
+
+        <div class="section-title">
+
+            <h2>
+                New claim
+            </h2>
+
+            <span class="pill">
+                Dynamic evidence
+            </span>
+
+        </div>
+
+        <p class="headnote">
+            Create a claim without editing JSON.
+            Evidence changes automatically with claim type.
+        </p>
+
+
+        <label for="newClaimId">
+            Claim ID
+        </label>
+
+        <input
+            id="newClaimId"
+            placeholder="CLM-007">
+
+
+        <label for="newClaimType">
+            Claim Type
+        </label>
+
+        <select id="newClaimType">
+
+            <option value="ACCIDENT">
+                Accident
+            </option>
+
+            <option value="THEFT">
+                Theft
+            </option>
+
+            <option value="NATURAL_EVENT">
+                Natural Event
+            </option>
+
+        </select>
+
+
+        <div
+            id="evidenceHint"
+            class="hint">
+
+            Accident claims require a Repair Estimate.
+            FIR is hidden.
+
+        </div>
+
+
+        <div class="row">
+
+            <div>
+
+                <label for="newIncidentDate">
+                    Incident Date
+                </label>
+
+                <input
+                    id="newIncidentDate"
+                    type="date">
+
+            </div>
+
+
+            <div>
+
+                <label for="newReportedDate">
+                    Reported Date
+                </label>
+
+                <input
+                    id="newReportedDate"
+                    type="date">
+
+            </div>
+
+        </div>
+
+
+        <label for="newAmount">
+            Claim Amount (INR)
+        </label>
+
+        <input
+            id="newAmount"
+            type="text"
+            inputmode="decimal"
+            placeholder="125000">
+
+
+        <label for="newDamageCategory">
+            Damage Category
+        </label>
+
+        <select id="newDamageCategory">
+
+            <option value="collision">
+                Collision
+            </option>
+
+            <option value="theft">
+                Theft
+            </option>
+
+            <option value="natural_event">
+                Natural Event
+            </option>
+
+            <option value="mechanical_breakdown">
+                Mechanical Breakdown
+            </option>
+
+            <option value="wear_and_tear">
+                Wear & Tear
+            </option>
+
+            <option value="internal_mechanical_failure">
+                Internal Mechanical Failure
+            </option>
+
+            <option value="intentional_damage">
+                Intentional Damage
+            </option>
+
+            <option value="unknown">
+                Unknown
+            </option>
+
+        </select>
+
+
+        <label for="newDescription">
+            Incident Description
+        </label>
+
+        <textarea
+            id="newDescription"
+            placeholder="Describe what happened, when it happened, and the observed damage."></textarea>
+
+
+        <label for="newClaimForm">
+            Claim Form
+        </label>
+
+        <textarea
+            id="newClaimForm"
+            placeholder="Claim form details / submitted information"></textarea>
+
+
+        <div id="repairEstimateField">
+
+            <label for="newRepairEstimate">
+                Repair Estimate
+            </label>
+
+            <textarea
+                id="newRepairEstimate"
+                placeholder="Garage repair estimate, amount and details"></textarea>
+
+        </div>
+
+
+        <div
+            id="firField"
+            class="hidden">
+
+            <label for="newFir">
+                FIR
+            </label>
+
+            <textarea
+                id="newFir"
+                placeholder="Police FIR details / FIR number / incident details"></textarea>
+
+        </div>
+
+
+        <label for="newAdditionalEvidence">
+
+            Additional Evidence
+
+            <span style="color:#91a4bc">
+                (optional)
+            </span>
+
+        </label>
+
+        <textarea
+            id="newAdditionalEvidence"
+            placeholder="Any extra evidence or notes"></textarea>
+
+
+        <button
+            id="reviewNewBtn"
+            class="btn"
+            type="button">
+
+            Review New Claim
+
+        </button>
+
+
+        <button
+            id="clearNewBtn"
+            class="btn secondary"
+            type="button">
+
+            Clear Form
+
+        </button>
+
+
+        <div
+            id="formNotice"
+            class="notice">
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- ==========================================================
+     RIGHT PANEL
+=========================================================== -->
+
+<main class="card">
+
+    <div class="section-title">
+
+        <div>
+
+            <h2>
+                Evidence Review
+            </h2>
+
+            <p
+                class="headnote"
+                style="margin-top:4px">
+
+                Deterministic policy checks remain authoritative;
+                Gemini adds grounded reasoning.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         EMPTY STATE
+    ======================================================= -->
+
+    <div id="emptyState">
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                🛡️
+            </div>
+
+            <strong>
+                Ready for claim review
+            </strong>
+
+            <p>
+                Select a demo claim or create a new claim
+                on the left.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         RESULTS
+    ======================================================= -->
+
+    <div
+        id="result"
+        class="result">
+
+
+        <!-- DECISION -->
+
+        <div
+            id="decisionBox"
+            class="decision">
+
+            <div>
+
+                <div
+                    style="
+                    font-size:11px;
+                    color:#91a4bc;
+                    margin-bottom:5px">
+
+                    RECOMMENDATION
+
+                </div>
+
+                <strong
+                    id="decisionText">
+
+                    —
+
+                </strong>
+
+                <div
+                    id="resultClaim"
+                    style="
+                    margin-top:5px;
+                    font-size:11px;
+                    color:#91a4bc">
+
+                    —
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="decisionSource"
+                class="decision-source">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <!-- AI SUMMARY -->
+
+        <div class="summary">
+
+            <b>
+                AI Summary
+            </b>
+
+            <div
+                id="summaryText"
+                style="margin-top:6px">
+
+                —
+
+            </div>
+
+        </div>
+
+
+        <!-- FINDINGS -->
+
+        <div class="section-title">
+
+            <h2>
+                Findings & Evidence
+            </h2>
+
+            <span
+                id="findingCount"
+                class="pill">
+
+                0
+
+            </span>
+
+        </div>
+
+
+        <div
+            id="findings"
+            class="findings">
+
+        </div>
+
+
+        <!-- ==================================================
+             REVIEWER FRIENDLY STRUCTURED REVIEW
+        =================================================== -->
+
+        <div
+            style="margin-top:20px">
+
+            <div class="section-title">
+
+                <h2>
+                    Review at a Glance
+                </h2>
+
+                <span class="pill">
+                    Reviewer View
+                </span>
+
+            </div>
+
+
+            <!-- OVERVIEW CARDS -->
+
+            <div class="review-overview">
+
+
+                <div class="review-stat">
+
+                    <div class="review-stat-label">
+                        Decision
+                    </div>
+
+                    <strong
+                        id="structuredDecision">
+
+                        —
+
+                    </strong>
+
+                </div>
+
+
+                <div class="review-stat">
+
+                    <div class="review-stat-label">
+                        Findings
+                    </div>
+
+                    <strong
+                        id="structuredFindingCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+                <div class="review-stat">
+
+                    <div class="review-stat-label">
+                        Missing Information
+                    </div>
+
+                    <strong
+                        id="structuredMissingCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+                <div class="review-stat">
+
+                    <div class="review-stat-label">
+                        Uncertainty
+                    </div>
+
+                    <strong
+                        id="structuredUncertaintyCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- REVIEWER ASSESSMENT -->
+
+            <div class="review-detail">
+
+                <div class="review-detail-title">
+                    Reviewer Assessment
+                </div>
+
+                <div id="structuredSummary">
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- MISSING INFORMATION -->
+
+            <div class="review-detail">
+
+                <div class="review-detail-title">
+                    Missing Information
+                </div>
+
+                <div id="structuredMissing">
+
+                    <span class="review-ok">
+                        ✓ No missing information identified.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- UNCERTAINTY -->
+
+            <div class="review-detail">
+
+                <div class="review-detail-title">
+                    Uncertainty / Escalation
+                </div>
+
+                <div id="structuredUncertainty">
+
+                    <span class="review-ok">
+                        ✓ No uncertainty requiring escalation.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- POLICY REFERENCES -->
+
+        <div
+            id="policyReferences"
+            style="margin-top:20px">
+
+        </div>
+
+
+    </div>
+
 </main>
-<footer>ClaimGuard AI · Evidence-grounded insurance claim review</footer>
+
+</div>
+</div>
+
 
 <script>
-const $=id=>document.getElementById(id);
-let claims=[];
-const claimSelect=$("claimSelect"), reviewButton=$("reviewButton");
+
+"use strict";
+
+
+/* ==========================================================
+   HELPERS
+========================================================== */
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function showNotice(
+    msg,
+    type = "error"
+){
+
+    const box = $("formNotice");
+
+    box.textContent = msg;
+
+    box.className =
+        "notice " + type;
+}
+
+
+function clearNotice(){
+
+    $("formNotice").className =
+        "notice";
+
+    $("formNotice").textContent =
+        "";
+}
+
+
+function setLoading(
+    button,
+    loading
+){
+
+    if(loading){
+
+        button.dataset.original =
+            button.textContent;
+
+        button.disabled = true;
+
+        button.textContent =
+            "Reviewing…";
+
+    }else{
+
+        button.disabled = false;
+
+        button.textContent =
+            button.dataset.original ||
+            button.textContent;
+
+    }
+}
+
+
+function esc(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* ==========================================================
+   DYNAMIC EVIDENCE
+========================================================== */
+
+/*
+   ACCIDENT      -> Repair Estimate
+   THEFT         -> FIR
+   NATURAL_EVENT -> Repair Estimate
+*/
+
+function updateEvidenceFields(){
+
+    const type =
+        $("newClaimType").value;
+
+    const theft =
+        type === "THEFT";
+
+
+    $("repairEstimateField")
+        .classList
+        .toggle(
+            "hidden",
+            theft
+        );
+
+
+    $("firField")
+        .classList
+        .toggle(
+            "hidden",
+            !theft
+        );
+
+
+    if(theft){
+
+        $("newRepairEstimate").value =
+            "";
+
+        $("evidenceHint").textContent =
+            "Theft claims require an FIR. Repair Estimate is hidden.";
+
+    }else{
+
+        $("newFir").value =
+            "";
+
+        $("evidenceHint").textContent =
+            type === "NATURAL_EVENT"
+
+                ? "Natural Event claims require a Repair Estimate. FIR is hidden."
+
+                : "Accident claims require a Repair Estimate. FIR is hidden.";
+    }
+}
+
+
+/* ==========================================================
+   TABS
+========================================================== */
+
+function switchTab(mode){
+
+    const demo =
+        mode === "demo";
+
+
+    $("demoPanel")
+        .classList
+        .toggle(
+            "hidden",
+            !demo
+        );
+
+
+    $("newPanel")
+        .classList
+        .toggle(
+            "hidden",
+            demo
+        );
+
+
+    $("tabDemo")
+        .classList
+        .toggle(
+            "active",
+            demo
+        );
+
+
+    $("tabNew")
+        .classList
+        .toggle(
+            "active",
+            !demo
+        );
+}
+
+
+/* ==========================================================
+   DEMO CLAIM DESCRIPTION
+========================================================== */
+
+function updateDemoDescription(){
+
+    const option =
+        $("claimSelect")
+            .selectedOptions[0];
+
+
+    $("demoDescription").textContent =
+        option
+
+            ? option.dataset.description ||
+              "Seeded claim scenario."
+
+            : "";
+}
+
+
+/* ==========================================================
+   HEALTH CHECK
+========================================================== */
+
+async function checkHealth(){
+
+    try{
+
+        const response =
+            await fetch("/health");
+
+
+        if(!response.ok)
+            throw Error();
+
+
+        await response.json();
+
+
+        $("healthStatus").textContent =
+            "● Backend online";
+
+        $("healthStatus").className =
+            "status ok";
+
+    }catch(error){
+
+        $("healthStatus").textContent =
+            "● Backend unavailable";
+
+        $("healthStatus").className =
+            "status";
+    }
+}
+
+
+/* ==========================================================
+   LOAD DEMO CLAIMS
+========================================================== */
 
 async function loadClaims(){
- try{
-  const r=await fetch("/api/claims"); if(!r.ok) throw new Error("Unable to load claims.");
-  claims=(await r.json()).claims||[];
-  claimSelect.innerHTML='<option value="">Choose a claim...</option>';
-  claims.forEach(c=>{let o=document.createElement("option");o.value=c.claim_id;o.textContent=`${c.claim_id} — ${c.claim_type}`;claimSelect.appendChild(o)});
- }catch(e){showError(e.message)}
-}
-claimSelect.addEventListener("change",()=>{
- const c=claims.find(x=>x.claim_id===claimSelect.value);
- if(!c){reviewButton.disabled=true;$("claimDescription").textContent="Select a claim to view its incident details.";return}
- reviewButton.disabled=false;
- $("claimDescription").innerHTML=`<strong>${escapeHtml(c.claim_id)}</strong> — ${escapeHtml(c.incident_description)}<br><br><strong>Claimed Amount:</strong> ₹${Number(c.claimed_amount).toLocaleString("en-IN")}`;
- $("results").style.display="none";
-});
-reviewButton.addEventListener("click",()=>reviewExisting(claimSelect.value));
 
-async function reviewExisting(id){await sendReview("/api/review",{claim_id:id})}
-$("newClaimForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const data={
-  claim_id:$("newClaimId").value,claim_type:$("newClaimType").value,
-  incident_date:$("incidentDate").value,reported_date:$("reportedDate").value,
-  claimed_amount:$("claimedAmount").value,damage_category:$("damageCategory").value,
-  incident_description:$("incidentDescription").value,claim_form:$("claimForm").value,
-  repair_estimate:$("repairEstimate").value,fir:$("fir").value,
-  additional_evidence:$("additionalEvidence").value
- };
- await sendReview("/api/review-new",data);
-});
+    try{
 
-async function sendReview(url,body){
- $("loading").style.display="block";$("errorMessage").style.display="none";$("results").style.display="none";
- try{
-  const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-  const d=await r.json();if(!r.ok)throw new Error(d.details||d.error||"Claim review failed.");
-  displayResults(d);
- }catch(e){showError(e.message)}finally{$("loading").style.display="none"}
-}
-function displayResults(data){
- const review=data.final_review;
- if(data.review_source==="deterministic_fallback") showError(data.ai_error||"Gemini unavailable. Showing deterministic policy review.");
- else $("errorMessage").style.display="none";
- $("decisionBadge").textContent=formatDecision(review.decision);
- $("decisionBadge").className="decision-badge "+getDecisionClass(review.decision);
- $("sourceChip").textContent=data.review_source==="gemini"?"✓ Gemini + deterministic checks":"⚠ Deterministic fallback";
- $("claimChip").textContent=data.claim_id||"Claim";
- $("summary").textContent=review.summary||"No summary provided.";
- displayFindings(review.findings||[]);
- displayList("missingSection","missingInformation",review.missing_information||[]);
- displayList("uncertaintySection","uncertainty",review.uncertainty||[]);
- displayPolicySections(data.policy_sections||[]);
- $("results").style.display="block";
- window.scrollTo({top:$("results").offsetTop-15,behavior:"smooth"});
-}
-function displayFindings(findings){
- const c=$("findings");c.innerHTML="";
- if(!findings.length){c.innerHTML='<div class="finding"><p>No material findings were returned.</p></div>';return}
- findings.forEach(f=>{
-  const card=document.createElement("div");card.className="finding";
-  const ev=(f.evidence||[]).map(x=>`<div class="evidence"><div class="evidence-label">${escapeHtml(x.source)}</div><div class="evidence-reference">${escapeHtml(x.reference)}</div><div class="evidence-quote">"${escapeHtml(x.quote)}"</div></div>`).join("");
-  card.innerHTML=`<div class="finding-top"><div class="finding-type">${escapeHtml(formatFindingType(f.type))}</div><span class="severity">${escapeHtml(f.severity)}</span></div><div class="finding-message">${escapeHtml(f.message)}</div>${f.policy_clause?`<div class="policy-clause">📜 ${escapeHtml(f.policy_clause)}</div>`:""}${ev}`;
-  c.appendChild(card);
- });
-}
-function displayList(sectionId,listId,items){
- const s=$(sectionId),l=$(listId);l.innerHTML="";if(!items.length){s.style.display="none";return}
- items.forEach(x=>{let li=document.createElement("li");li.textContent=x;l.appendChild(li)});s.style.display="block";
-}
-function displayPolicySections(sections){
- const c=$("policySections");c.innerHTML="";
- if(!sections.length){c.innerHTML='<div class="policy-item"><span>Policy retrieval unavailable in fallback mode.</span></div>';return}
- sections.forEach(s=>{let d=document.createElement("div");d.className="policy-item";d.innerHTML=`<strong>Section ${escapeHtml(s.section_id)}: ${escapeHtml(s.title)}</strong><span class="policy-score">${Number(s.score).toFixed(4)}</span>`;c.appendChild(d)});
-}
-function formatDecision(x){return x.replaceAll("_"," ")}
-function formatFindingType(x){return x.replaceAll("_"," ")}
-function getDecisionClass(x){return {APPROVE:"approve",REJECT:"reject",REQUEST_INFORMATION:"request",ESCALATE:"escalate"}[x]||""}
-function showError(m){$("errorMessage").textContent=m;$("errorMessage").style.display="block"}
-function escapeHtml(v){const d=document.createElement("div");d.textContent=v??"";return d.innerHTML}
+        const response =
+            await fetch("/api/claims");
 
-$("demoTab").onclick=()=>{showTab("demo")};$("newTab").onclick=()=>{showTab("new")};$("backButton").onclick=()=>showTab("demo");
-function showTab(tab){
- const demo=tab==="demo";$("demoPanel").style.display=demo?"block":"none";$("newPanel").style.display=demo?"none":"block";
- $("demoTab").classList.toggle("active",demo);$("newTab").classList.toggle("active",!demo);$("results").style.display="none";$("errorMessage").style.display="none";
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw Error(
+                data.error ||
+                "Unable to load claims"
+            );
+        }
+
+
+        const claims =
+            Array.isArray(data)
+
+                ? data
+
+                : (
+                    data.claims ||
+                    []
+                );
+
+
+        $("claimSelect").innerHTML =
+            "";
+
+
+        claims.forEach(claim => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                claim.claim_id ||
+                claim.id;
+
+
+            option.textContent =
+                (
+                    claim.claim_id ||
+                    claim.id
+                ) +
+                (
+                    claim.damage_category
+
+                        ? " — " +
+                          claim.damage_category
+
+                        : ""
+                );
+
+
+            option.dataset.description =
+                claim.incident_description ||
+                claim.description ||
+                "Seeded claim scenario.";
+
+
+            $("claimSelect")
+                .appendChild(option);
+
+        });
+
+
+        $("statClaims").textContent =
+            claims.length;
+
+
+        updateDemoDescription();
+
+
+    }catch(error){
+
+        $("statClaims").textContent =
+            "—";
+
+
+        $("claimSelect").innerHTML =
+            `
+            <option value="">
+                Unable to load claims
+            </option>
+            `;
+
+
+        $("demoDescription").textContent =
+            error.message;
+    }
 }
-$("newClaimType").addEventListener("change",()=>{
- const theft=$("newClaimType").value==="THEFT";
- $("firField").style.display=theft?"block":"none";$("repairField").style.display=theft?"none":"block";
-});
-loadClaims();
+
+
+/* ==========================================================
+   RENDER REVIEW
+========================================================== */
+
+function renderReview(data){
+
+    const review =
+        data.final_review ||
+        data;
+
+
+    $("emptyState")
+        .style
+        .display =
+        "none";
+
+
+    $("result")
+        .style
+        .display =
+        "block";
+
+
+    /* ------------------------------------------------------
+       DECISION
+    ------------------------------------------------------ */
+
+    const decision =
+        String(
+            review.decision ||
+            review.recommendation ||
+            data.initial_decision ||
+            "UNKNOWN"
+        ).toUpperCase();
+
+
+    $("decisionBox").className =
+        "decision " +
+        decision.toLowerCase();
+
+
+    $("decisionText").textContent =
+        decision;
+
+
+    $("resultClaim").textContent =
+        data.claim_id ||
+        review.claim_id ||
+        "Claim review";
+
+
+    $("decisionSource").textContent =
+        "Source: " +
+        (
+            data.review_source ||
+            "review pipeline"
+        );
+
+
+    /* ------------------------------------------------------
+       SUMMARY
+    ------------------------------------------------------ */
+
+    const summary =
+        review.summary ||
+        review.reasoning ||
+        review.overall_assessment ||
+        "No summary returned.";
+
+
+    $("summaryText").textContent =
+        summary;
+
+
+    /* ------------------------------------------------------
+       FINDINGS
+    ------------------------------------------------------ */
+
+    const findings =
+        Array.isArray(review.findings)
+
+            ? review.findings
+
+            : [];
+
+
+    $("findingCount").textContent =
+        findings.length;
+
+
+    const findingsContainer =
+        $("findings");
+
+
+    if(findings.length === 0){
+
+        findingsContainer.innerHTML = `
+            <div class="empty-findings">
+                ✓ No policy findings identified.
+            </div>
+        `;
+
+    }else{
+
+        findingsContainer.innerHTML =
+            findings.map(
+                (finding,index) => {
+
+                    const title =
+                        finding.title ||
+                        finding.type ||
+                        `Finding ${index + 1}`;
+
+
+                    const detail =
+                        finding.message ||
+                        finding.detail ||
+                        finding.description ||
+                        finding.reason ||
+                        "";
+
+
+                    const severity =
+                        finding.severity ||
+                        finding.status ||
+                        "";
+
+
+                    const policyClause =
+                        finding.policy_clause ||
+                        "";
+
+
+                    const evidence =
+                        Array.isArray(
+                            finding.evidence
+                        )
+
+                            ? finding.evidence
+
+                            : [];
+
+
+                    return `
+
+                        <div class="finding-card">
+
+                            <div class="finding-header">
+
+                                <strong>
+                                    ${esc(title)}
+                                </strong>
+
+                                ${
+                                    severity
+
+                                        ? `
+                                        <span class="finding-severity">
+                                            ${esc(
+                                                String(
+                                                    severity
+                                                )
+                                            )}
+                                        </span>
+                                        `
+
+                                        : ""
+                                }
+
+                            </div>
+
+
+                            ${
+                                detail
+
+                                    ? `
+                                    <p>
+                                        ${esc(detail)}
+                                    </p>
+                                    `
+
+                                    : ""
+                            }
+
+
+                            ${
+                                policyClause
+
+                                    ? `
+                                    <div style="
+                                        margin-top:8px;
+                                        color:#91a4bc;
+                                        font-size:11px;
+                                    ">
+                                        <strong>
+                                            Policy clause:
+                                        </strong>
+
+                                        ${esc(policyClause)}
+                                    </div>
+                                    `
+
+                                    : ""
+                            }
+
+
+                            ${
+                                evidence.length
+
+                                    ? `
+                                    <div class="evidence-list">
+
+                                        ${
+                                            evidence
+                                                .map(ev => `
+
+                                                    <div class="evidence-item">
+
+                                                        <strong>
+                                                            ${esc(
+                                                                ev.document ||
+                                                                ev.source ||
+                                                                "Evidence"
+                                                            )}
+                                                        </strong>
+
+
+                                                        ${
+                                                            ev.reference
+
+                                                                ? `
+                                                                <span>
+                                                                    Reference:
+                                                                    ${esc(
+                                                                        ev.reference
+                                                                    )}
+                                                                </span>
+                                                                `
+
+                                                                : ""
+                                                        }
+
+
+                                                        ${
+                                                            ev.quote
+
+                                                                ? `
+                                                                <span>
+                                                                    ${esc(
+                                                                        ev.quote
+                                                                    )}
+                                                                </span>
+                                                                `
+
+                                                                : ""
+                                                        }
+
+                                                    </div>
+
+                                                `)
+                                                .join("")
+                                        }
+
+                                    </div>
+                                    `
+
+                                    : ""
+                            }
+
+                        </div>
+
+                    `;
+                }
+            ).join("");
+    }
+
+
+    /* ------------------------------------------------------
+       MISSING INFORMATION
+    ------------------------------------------------------ */
+
+    const missing =
+        Array.isArray(
+            review.missing_information
+        )
+
+            ? review.missing_information
+
+            : [];
+
+
+    $("structuredMissingCount")
+        .textContent =
+        missing.length;
+
+
+    if(missing.length === 0){
+
+        $("structuredMissing").innerHTML = `
+            <span class="review-ok">
+                ✓ No missing information identified.
+            </span>
+        `;
+
+    }else{
+
+        $("structuredMissing").innerHTML = `
+            <ul class="review-list">
+
+                ${
+                    missing
+                        .map(item => `
+                            <li>
+                                ${esc(item)}
+                            </li>
+                        `)
+                        .join("")
+                }
+
+            </ul>
+        `;
+    }
+
+
+    /* ------------------------------------------------------
+       UNCERTAINTY
+    ------------------------------------------------------ */
+
+    const uncertainty =
+        Array.isArray(
+            review.uncertainty
+        )
+
+            ? review.uncertainty
+
+            : [];
+
+
+    $("structuredUncertaintyCount")
+        .textContent =
+        uncertainty.length;
+
+
+    if(uncertainty.length === 0){
+
+        $("structuredUncertainty").innerHTML = `
+            <span class="review-ok">
+                ✓ No uncertainty requiring escalation.
+            </span>
+        `;
+
+    }else{
+
+        $("structuredUncertainty").innerHTML = `
+            <ul class="review-list">
+
+                ${
+                    uncertainty
+                        .map(item => `
+                            <li>
+                                ${esc(item)}
+                            </li>
+                        `)
+                        .join("")
+                }
+
+            </ul>
+        `;
+    }
+
+
+    /* ------------------------------------------------------
+       REVIEW AT A GLANCE
+    ------------------------------------------------------ */
+
+    $("structuredDecision").textContent =
+        decision;
+
+
+    if(decision === "APPROVE"){
+
+        $("structuredDecision").style.color =
+            "var(--green)";
+
+    }else if(decision === "REJECT"){
+
+        $("structuredDecision").style.color =
+            "var(--red)";
+
+    }else{
+
+        $("structuredDecision").style.color =
+            "var(--amber)";
+    }
+
+
+    $("structuredFindingCount")
+        .textContent =
+        findings.length;
+
+
+    $("structuredSummary")
+        .textContent =
+        summary;
+
+
+    /* ------------------------------------------------------
+       POLICY REFERENCES
+    ------------------------------------------------------ */
+
+    const sections =
+        Array.isArray(
+            data.policy_sections
+        )
+
+            ? data.policy_sections
+
+            : [];
+
+
+    if(sections.length === 0){
+
+        $("policyReferences").innerHTML =
+            "";
+
+    }else{
+
+        $("policyReferences").innerHTML = `
+
+            <div class="section-title">
+
+                <h2>
+                    Applicable Policy Sections
+                </h2>
+
+                <span class="pill">
+                    ${sections.length}
+                </span>
+
+            </div>
+
+
+            <div>
+
+                ${
+                    sections.map(section => `
+
+                        <div class="policy-section">
+
+                            <div class="policy-section-title">
+
+                                Section ${esc(
+                                    section.section_id ||
+                                    "—"
+                                )}
+
+                                — 
+
+                                ${esc(
+                                    section.title ||
+                                    "Policy section"
+                                )}
+
+                            </div>
+
+
+                            ${
+                                section.score !== undefined
+
+                                    ? `
+                                    <div class="policy-section-meta">
+                                        Relevance score:
+                                        ${Number(
+                                            section.score
+                                        ).toFixed(4)}
+                                    </div>
+                                    `
+
+                                    : ""
+                            }
+
+                        </div>
+
+                    `)
+                    .join("")
+                }
+
+            </div>
+        `;
+    }
+}
+
+
+/* ==========================================================
+   REVIEW DEMO CLAIM
+========================================================== */
+
+async function reviewDemoClaim(){
+
+    clearNotice();
+
+
+    const id =
+        $("claimSelect").value;
+
+
+    if(!id)
+        return;
+
+
+    const button =
+        $("reviewDemoBtn");
+
+
+    setLoading(
+        button,
+        true
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/review",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        claim_id:id
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw Error(
+                data.error ||
+                data.message ||
+                "Review failed"
+            );
+        }
+
+
+        renderReview(data);
+
+
+    }catch(error){
+
+        showNotice(
+            error.message
+        );
+
+    }finally{
+
+        setLoading(
+            button,
+            false
+        );
+    }
+}
+
+
+/* ==========================================================
+   COLLECT NEW CLAIM
+========================================================== */
+
+function collectNewClaim(){
+
+    const type =
+        $("newClaimType").value;
+
+
+    const rawAmount =
+        $("newAmount").value
+            .replace(/₹/g,"")
+            .replace(/,/g,"")
+            .trim();
+
+
+    const amount =
+        Number(rawAmount);
+
+
+    return {
+
+        claim_id:
+            $("newClaimId")
+                .value
+                .trim(),
+
+        claim_type:
+            type,
+
+        incident_date:
+            $("newIncidentDate")
+                .value,
+
+        reported_date:
+            $("newReportedDate")
+                .value,
+
+        claim_amount:
+            amount,
+
+        damage_category:
+            $("newDamageCategory")
+                .value,
+
+        incident_description:
+            $("newDescription")
+                .value
+                .trim(),
+
+        claim_form:
+            $("newClaimForm")
+                .value
+                .trim(),
+
+        repair_estimate:
+            type === "THEFT"
+
+                ? ""
+
+                : $("newRepairEstimate")
+                    .value
+                    .trim(),
+
+        fir:
+            type === "THEFT"
+
+                ? $("newFir")
+                    .value
+                    .trim()
+
+                : "",
+
+        additional_evidence:
+            $("newAdditionalEvidence")
+                .value
+                .trim()
+    };
+}
+
+
+/* ==========================================================
+   REVIEW NEW CLAIM
+========================================================== */
+
+async function reviewNewClaim(){
+
+    clearNotice();
+
+
+    const claim =
+        collectNewClaim();
+
+
+    /* Basic frontend validation */
+
+    if(
+
+        !claim.claim_id ||
+
+        !claim.incident_date ||
+
+        !claim.reported_date ||
+
+        !Number.isFinite(
+            claim.claim_amount
+        ) ||
+
+        claim.claim_amount <= 0 ||
+
+        !claim.incident_description ||
+
+        !claim.claim_form
+
+    ){
+
+        showNotice(
+            "Please enter a valid claimed amount and complete all required fields."
+        );
+
+        return;
+    }
+
+
+    if(
+        claim.incident_description.length < 20
+    ){
+
+        showNotice(
+            "Incident Description should contain at least 20 characters."
+        );
+
+        return;
+    }
+
+
+    if(
+        claim.claim_type === "THEFT" &&
+        !claim.fir
+    ){
+
+        showNotice(
+            "Theft claims require FIR details."
+        );
+
+        return;
+    }
+
+
+    if(
+        claim.claim_type !== "THEFT" &&
+        !claim.repair_estimate
+    ){
+
+        showNotice(
+            "This claim type requires Repair Estimate details."
+        );
+
+        return;
+    }
+
+
+    const button =
+        $("reviewNewBtn");
+
+
+    setLoading(
+        button,
+        true
+    );
+
+
+    showNotice(
+        "Running deterministic policy checks and grounded AI reasoning…",
+        "info"
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/review-new",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify(
+                        claim
+                    )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw Error(
+                data.error ||
+                data.message ||
+                "Review failed"
+            );
+        }
+
+
+        renderReview(data);
+
+
+        clearNotice();
+
+
+    }catch(error){
+
+        showNotice(
+            error.message
+        );
+
+    }finally{
+
+        setLoading(
+            button,
+            false
+        );
+    }
+}
+
+
+/* ==========================================================
+   CLEAR NEW CLAIM FORM
+========================================================== */
+
+function clearNewForm(){
+
+    [
+        "newClaimId",
+        "newIncidentDate",
+        "newReportedDate",
+        "newAmount",
+        "newDescription",
+        "newClaimForm",
+        "newRepairEstimate",
+        "newFir",
+        "newAdditionalEvidence"
+
+    ].forEach(
+        id => {
+            $(id).value = "";
+        }
+    );
+
+
+    $("newClaimType").value =
+        "ACCIDENT";
+
+
+    $("newDamageCategory").value =
+        "collision";
+
+
+    clearNotice();
+
+
+    updateEvidenceFields();
+}
+
+
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        $("tabDemo")
+            .addEventListener(
+                "click",
+                () => switchTab("demo")
+            );
+
+
+        $("tabNew")
+            .addEventListener(
+                "click",
+                () => switchTab("new")
+            );
+
+
+        $("claimSelect")
+            .addEventListener(
+                "change",
+                updateDemoDescription
+            );
+
+
+        $("reviewDemoBtn")
+            .addEventListener(
+                "click",
+                reviewDemoClaim
+            );
+
+
+        $("newClaimType")
+            .addEventListener(
+                "change",
+                updateEvidenceFields
+            );
+
+
+        $("reviewNewBtn")
+            .addEventListener(
+                "click",
+                reviewNewClaim
+            );
+
+
+        $("clearNewBtn")
+            .addEventListener(
+                "click",
+                clearNewForm
+            );
+
+
+        updateEvidenceFields();
+
+        loadClaims();
+
+        checkHealth();
+
+    }
+);
+
 </script>
+
 </body>
 </html>
