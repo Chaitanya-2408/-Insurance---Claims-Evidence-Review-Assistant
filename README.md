@@ -452,4 +452,42 @@ ClaimGuard AI follows a controlled AI pipeline:
 
 This architecture combines **AI reasoning + semantic retrieval + deterministic policy enforcement + human escalation** instead of relying entirely on an LLM.
 
+### AI Components at a Glance
 
+```text
+                 Insurance Claim
+                        │
+                        ▼
+              Deterministic Rules
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+     Policy Retrieval          Claim Findings
+            │
+            ▼
+   Gemini Embeddings
+   gemini-embedding-001
+            │
+            ▼
+   NumPy Cosine Similarity
+            │
+            ▼
+   Relevant Policy Sections
+            │
+            └───────────┐
+                        ▼
+              Gemini 3.1 Flash-Lite
+               gemini-3.1-flash-lite
+                        │
+                        ▼
+             Grounded AI Explanation
+                        │
+                        ▼
+        Deterministic Decision Authority
+                        │
+        ┌────────┬──────┼──────────┐
+        ▼        ▼      ▼          ▼
+     APPROVE   REJECT  REQUEST   ESCALATE
+                     INFORMATION
+```
