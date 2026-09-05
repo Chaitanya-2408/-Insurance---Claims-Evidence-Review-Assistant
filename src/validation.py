@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import math
 import re
 
 
@@ -23,21 +24,25 @@ SUPPORTED_DAMAGE_CATEGORIES = {
 def parse_input_date(value, field_name):
     """Validate and parse an ISO date."""
 
-    if not value:
+    if value is None or str(value).strip() == "":
         raise ValueError(
             f"{field_name} is required."
         )
 
-    try:
-        parsed = datetime.strptime(
-            value,
-            "%Y-%m-%d"
-        ).date()
+    # Accept a date object as well as the normal UI string.
+    if isinstance(value, date) and not isinstance(value, datetime):
+        parsed = value
+    else:
+        try:
+            parsed = datetime.strptime(
+                str(value).strip(),
+                "%Y-%m-%d"
+            ).date()
 
-    except ValueError:
-        raise ValueError(
-            f"{field_name} must use YYYY-MM-DD format."
-        )
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"{field_name} must use YYYY-MM-DD format."
+            )
 
     if parsed > date.today():
         raise ValueError(
@@ -45,6 +50,71 @@ def parse_input_date(value, field_name):
         )
 
     return parsed
+
+
+def parse_claim_amount(value):
+    """
+    Convert the incoming claim amount into a valid positive float.
+
+    Accepts values such as:
+        125000
+        "125000"
+        "125,000"
+        "₹125000"
+        "₹125,000"
+    """
+
+    if value is None:
+        raise ValueError(
+            "Claimed amount must be a valid number."
+        )
+
+    # Handle numeric JSON values directly.
+    if isinstance(value, bool):
+        raise ValueError(
+            "Claimed amount must be a valid number."
+        )
+
+    if isinstance(value, (int, float)):
+        amount = float(value)
+
+    else:
+        raw = str(value).strip()
+
+        if not raw:
+            raise ValueError(
+                "Claimed amount must be a valid number."
+            )
+
+        # Remove common formatting.
+        raw = (
+            raw
+            .replace("₹", "")
+            .replace(",", "")
+            .replace("INR", "")
+            .replace("inr", "")
+            .strip()
+        )
+
+        try:
+            amount = float(raw)
+
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Claimed amount must be a valid number."
+            )
+
+    if not math.isfinite(amount):
+        raise ValueError(
+            "Claimed amount must be a valid number."
+        )
+
+    if amount <= 0:
+        raise ValueError(
+            "Claimed amount must be greater than zero."
+        )
+
+    return amount
 
 
 def validate_new_claim(data):
@@ -116,21 +186,18 @@ def validate_new_claim(data):
     # --------------------------------------------------------
     # Claimed amount
     # --------------------------------------------------------
+    #
+    # IMPORTANT:
+    # The frontend/API sends "claim_amount".
+    # The internal claim object uses "claimed_amount"
+    # because the deterministic rules engine expects that name.
+    # --------------------------------------------------------
 
-    raw_amount = data.get("claimed_amount")
+    raw_amount = data.get("claim_amount")
 
-    try:
-        claimed_amount = float(raw_amount)
-
-    except (TypeError, ValueError):
-        raise ValueError(
-            "Claimed amount must be a valid number."
-        )
-
-    if claimed_amount <= 0:
-        raise ValueError(
-            "Claimed amount must be greater than zero."
-        )
+    claimed_amount = parse_claim_amount(
+        raw_amount
+    )
 
     # --------------------------------------------------------
     # Incident description
@@ -207,7 +274,7 @@ def validate_new_claim(data):
         )
 
     # --------------------------------------------------------
-    # Build the internal claim structure
+    # Build internal claim structure
     # --------------------------------------------------------
 
     claim = {
@@ -215,7 +282,10 @@ def validate_new_claim(data):
         "claim_type": claim_type,
         "incident_date": incident_date.isoformat(),
         "reported_date": reported_date.isoformat(),
+
+        # Keep this name for compatibility with rules.py/service.py.
         "claimed_amount": claimed_amount,
+
         "damage_category": damage_category,
         "incident_description": incident_description,
         "documents": documents,
