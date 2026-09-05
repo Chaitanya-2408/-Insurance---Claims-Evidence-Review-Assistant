@@ -1,0 +1,20 @@
+{
+  "claim_id": "CLM-002",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-24",
+  "reported_date": "2026-08-25",
+  "claimed_amount": 85000,
+  "damage_category": "collision",
+  "documents": [
+    "Claim Form",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-24",
+    "incident_type": "collision",
+    "location": "Guntur",
+    "claimed_amount": 85000
+  },
+  "incident_description": "The insured vehicle hit a roadside barrier while travelling during the evening. The front bumper and right fender were damaged."
+}
