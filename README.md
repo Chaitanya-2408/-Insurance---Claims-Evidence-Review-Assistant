@@ -335,4 +335,121 @@ Deterministic Layer
                     └── Reviewer-friendly explanation
 ```
 
+## Why Gemini and Where It Is Used
+
+ClaimGuard AI uses Gemini selectively for AI-assisted reasoning rather than allowing an LLM to make unrestricted insurance decisions.
+
+### 1. Gemini 3.1 Flash-Lite — AI Reasoning
+
+The project uses **Gemini 3.1 Flash-Lite** (`gemini-3.1-flash-lite`) as the reasoning layer.
+
+Gemini is used to:
+
+- Interpret the claim information and retrieved policy clauses.
+- Generate a natural-language explanation of the review.
+- Reason over the evidence provided by the deterministic rule engine.
+- Produce structured review output such as findings, missing information, uncertainty, and recommendation context.
+- Explain why the available evidence supports or conflicts with the applicable policy rules.
+
+The LLM is explicitly instructed to use only the supplied claim data, policy evidence, and deterministic findings. It must not invent evidence or policy clauses.
+
+Most importantly, **Gemini does not have authority to override deterministic policy findings**. The final decision hierarchy is controlled by the rule engine.
+
+For example:
+
+- Missing required evidence → `REQUEST_INFORMATION`
+- Clearly excluded damage → `REJECT`
+- Material contradiction → `ESCALATE`
+- Uncertain cause of damage → `ESCALATE`
+- Valid evidence with no blocking issue → `APPROVE`
+
+This design keeps the system explainable and reduces the risk of an LLM making unsupported insurance decisions.
+
+---
+
+### 2. Gemini Embeddings — Policy Retrieval
+
+The project uses **Gemini Embeddings (`gemini-embedding-001`)** to convert policy sections into numerical vector representations.
+
+The local motor insurance policy is divided into meaningful sections such as:
+
+- Coverage
+- Insured Declared Value (IDV)
+- Reporting window
+- Required documents
+- Exclusions
+- Claim amount rules
+- Contradictions
+- Uncertainty and escalation
+- Decision rules
+
+Each policy section is embedded and compared with the claim review query.
+
+This allows the system to retrieve the policy sections most relevant to the current claim instead of sending the entire policy to the LLM every time.
+
+---
+
+### 3. Local NumPy Retrieval — No Hosted Vector Database
+
+After generating embeddings with `gemini-embedding-001`, the project performs retrieval **locally using NumPy cosine similarity**.
+
+The retrieval flow is:
+
+Claim / Review Query
+        ↓
+Gemini Embedding (`gemini-embedding-001`)
+        ↓
+Local NumPy cosine similarity
+        ↓
+Top relevant policy sections
+        ↓
+Gemini 3.1 Flash-Lite
+        ↓
+Grounded explanation
+
+The project intentionally does not depend on a hosted vector database or third-party RAG service.
+
+This keeps the retrieval pipeline:
+
+- Local
+- Lightweight
+- Easy to inspect
+- Reproducible
+- Suitable for a small policy knowledge base
+
+---
+
+### 4. Why Two Different Gemini Capabilities?
+
+The two Gemini components serve different purposes:
+
+| Component | Purpose |
+|---|---|
+| **Gemini 3.1 Flash-Lite** | AI reasoning and grounded explanation |
+| **gemini-embedding-001** | Convert policy text and queries into vectors for semantic retrieval |
+| **NumPy cosine similarity** | Locally rank the most relevant policy sections |
+| **Deterministic Python rules** | Authoritative validation and final decision logic |
+
+This separation is intentional.
+
+The embeddings help the system **find the relevant policy evidence**, while Gemini 3.1 Flash-Lite helps **reason over that evidence and explain the review**.
+
+The deterministic rule engine remains the authoritative layer for policy-critical decisions.
+
+---
+
+### 5. Grounded AI Architecture
+
+ClaimGuard AI follows a controlled AI pipeline:
+
+1. Validate the claim input and evidence.
+2. Apply deterministic insurance rules.
+3. Retrieve relevant policy sections using Gemini embeddings and local NumPy similarity.
+4. Provide the retrieved policy evidence and deterministic findings to Gemini 3.1 Flash-Lite.
+5. Generate a structured, grounded explanation.
+6. Preserve the deterministic decision as the authoritative recommendation.
+7. Escalate cases involving contradictions, missing critical evidence, or significant uncertainty.
+
+This architecture combines **AI reasoning + semantic retrieval + deterministic policy enforcement + human escalation** instead of relying entirely on an LLM.
+
 
