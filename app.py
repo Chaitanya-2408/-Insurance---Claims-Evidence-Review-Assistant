@@ -22,78 +22,69 @@ def load_gemini_api_key():
     2. .env
     3. .env.example
 
-    This allows the reviewer to simply add their API key to
+    The evaluator can place their Gemini API key in
     .env.example and run:
 
         python app.py
     """
 
-    # If the environment variable already exists, keep it.
-    if os.getenv("GEMINI_API_KEY"):
+    # Keep a real environment variable if already provided.
+    existing_key = os.getenv("GEMINI_API_KEY", "").strip()
+
+    if existing_key and existing_key not in {
+        "YOUR_GEMINI_API_KEY",
+        "YOUR_API_KEY",
+        "PASTE_YOUR_API_KEY_HERE"
+    }:
         return
 
     project_root = Path(__file__).resolve().parent
 
-    env_files = [
-        project_root / ".env",
-        project_root / ".env.example"
-    ]
+    for filename in [".env", ".env.example"]:
 
-    for env_file in env_files:
+        env_file = project_root / filename
 
         if not env_file.exists():
             continue
 
         try:
-
-            with env_file.open(
-                "r",
+            for line in env_file.read_text(
                 encoding="utf-8"
-            ) as file:
+            ).splitlines():
 
-                for line in file:
+                line = line.strip()
 
-                    line = line.strip()
+                if (
+                    not line
+                    or line.startswith("#")
+                    or "=" not in line
+                ):
+                    continue
 
-                    # Ignore empty lines and comments
-                    if not line or line.startswith("#"):
-                        continue
+                key_name, key_value = line.split(
+                    "=",
+                    1
+                )
 
-                    if not line.startswith(
-                        "GEMINI_API_KEY="
-                    ):
-                        continue
+                key_name = key_name.strip()
+                key_value = key_value.strip().strip("\"'")
 
-                    key = line.split(
-                        "=",
-                        1
-                    )[1].strip()
+                if key_name != "GEMINI_API_KEY":
+                    continue
 
-                    # Remove optional quotes
-                    key = key.strip(
-                        "\"'"
-                    )
+                if key_value in {
+                    "",
+                    "YOUR_GEMINI_API_KEY",
+                    "YOUR_API_KEY",
+                    "PASTE_YOUR_API_KEY_HERE"
+                }:
+                    continue
 
-                    # Ignore placeholder values
-                    if not key:
-                        continue
-
-                    if key in {
-                        "YOUR_GEMINI_API_KEY",
-                        "YOUR_API_KEY",
-                        "PASTE_YOUR_API_KEY_HERE"
-                    }:
-                        continue
-
-                    os.environ[
-                        "GEMINI_API_KEY"
-                    ] = key
-
-                    return
+                os.environ["GEMINI_API_KEY"] = key_value
+                return
 
         except OSError:
             continue
-
 
 # Load API key BEFORE creating ClaimReviewService.
 load_gemini_api_key()
