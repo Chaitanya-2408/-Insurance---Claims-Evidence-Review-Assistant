@@ -1,0 +1,29 @@
+{
+  "claim_id": "CLM-006",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-27",
+  "reported_date": "2026-08-28",
+  "claimed_amount": 180000,
+  "damage_category": "unknown",
+  "documents": [
+    "Claim Form",
+    "Repair Estimate",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-27",
+    "incident_type": "vehicle damage",
+    "location": "Hyderabad",
+    "claimed_amount": 180000
+  },
+  "incident_description": "The car was found damaged in the morning. The policyholder does not know when or how the damage occurred.",
+  "repair_estimate": {
+    "estimated_amount": 180000,
+    "damages": [
+      "Rear body panel",
+      "Rear bumper",
+      "Boot door"
+    ]
+  }
+}

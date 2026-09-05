@@ -1,0 +1,27 @@
+{
+  "claim_id": "CLM-003",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-18",
+  "reported_date": "2026-08-19",
+  "claimed_amount": 42000,
+  "damage_category": "mechanical_breakdown",
+  "documents": [
+    "Claim Form",
+    "Repair Estimate",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-18",
+    "incident_type": "mechanical failure",
+    "location": "Vijayawada",
+    "claimed_amount": 42000
+  },
+  "incident_description": "The vehicle stopped suddenly while being driven normally. No collision or external accident occurred.",
+  "repair_estimate": {
+    "estimated_amount": 42000,
+    "damages": [
+      "Engine component failure"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "claim_id": "CLM-004",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-15",
+  "reported_date": "2026-08-16",
+  "claimed_amount": 210000,
+  "damage_category": "collision",
+  "documents": [
+    "Claim Form",
+    "Repair Estimate",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-15",
+    "incident_type": "collision",
+    "location": "Hyderabad",
+    "claimed_amount": 210000
+  },
+  "incident_description": "The vehicle was damaged when it hit a concrete divider on 15 August 2026.",
+  "repair_estimate": {
+    "estimated_amount": 210000,
+    "damages": [
+      "Front bumper",
+      "Bonnet",
+      "Radiator",
+      "Front suspension"
+    ]
+  },
+  "additional_evidence": {
+    "description": "A supporting statement says the vehicle was actually damaged on 12 August 2026 during a parking incident."
+  }
+}

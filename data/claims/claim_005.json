@@ -1,0 +1,28 @@
+{
+  "claim_id": "CLM-005",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-01",
+  "reported_date": "2026-08-15",
+  "claimed_amount": 95000,
+  "damage_category": "collision",
+  "documents": [
+    "Claim Form",
+    "Repair Estimate",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-01",
+    "incident_type": "collision",
+    "location": "Warangal",
+    "claimed_amount": 95000
+  },
+  "incident_description": "The vehicle collided with another vehicle on 1 August 2026. The policyholder reported the claim on 15 August 2026.",
+  "repair_estimate": {
+    "estimated_amount": 95000,
+    "damages": [
+      "Rear bumper",
+      "Tail light"
+    ]
+  }
+}

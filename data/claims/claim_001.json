@@ -1,0 +1,29 @@
+{
+  "claim_id": "CLM-001",
+  "claim_type": "ACCIDENT",
+  "policy_id": "CG-MOTOR-2026-001",
+  "incident_date": "2026-08-20",
+  "reported_date": "2026-08-22",
+  "claimed_amount": 145000,
+  "damage_category": "collision",
+  "documents": [
+    "Claim Form",
+    "Repair Estimate",
+    "Incident Description"
+  ],
+  "claim_form": {
+    "incident_date": "2026-08-20",
+    "incident_type": "collision",
+    "location": "Hyderabad",
+    "claimed_amount": 145000
+  },
+  "incident_description": "The insured car collided with another vehicle at an intersection on 20 August 2026. The front bumper, bonnet and left headlight were damaged.",
+  "repair_estimate": {
+    "estimated_amount": 145000,
+    "damages": [
+      "Front bumper",
+      "Bonnet",
+      "Left headlight"
+    ]
+  }
+}

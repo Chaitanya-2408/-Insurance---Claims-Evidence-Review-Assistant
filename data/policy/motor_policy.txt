@@ -1,0 +1,173 @@
+MOTOR VEHICLE INSURANCE POLICY
+Policy ID: CG-MOTOR-2026-001
+Version: 1.0
+Effective Date: 2026-01-01
+Expiry Date: 2026-12-31
+
+============================================================
+1. POLICY COVERAGE
+============================================================
+
+This policy provides coverage for accidental physical damage to the
+insured vehicle caused by:
+
+- Collision with another vehicle
+- Collision with a fixed or stationary object
+- Accidental overturning
+- Fire caused by an accidental event
+- Theft of the insured vehicle
+- Natural events including flood, storm, cyclone and earthquake
+
+Coverage applies only to the vehicle identified in the policy schedule.
+
+============================================================
+2. INSURED VALUE
+============================================================
+
+The Insured Declared Value (IDV) of the vehicle is:
+
+INR 500,000
+
+The maximum payable amount for a covered claim cannot exceed the
+applicable IDV.
+
+============================================================
+3. CLAIM REPORTING WINDOW
+============================================================
+
+The policyholder must report an accident or damage claim within
+7 calendar days from the date of the incident.
+
+Theft claims must be reported to the insurer and the police as soon
+as reasonably possible.
+
+Claims reported outside the applicable reporting period require
+manual review and may be declined if the delay is not reasonably
+explained.
+
+============================================================
+4. REQUIRED DOCUMENTS
+============================================================
+
+For an ACCIDENT claim, the following documents are required:
+
+- Claim Form
+- Repair Estimate
+- Incident Description
+
+For a THEFT claim, the following documents are required:
+
+- Claim Form
+- FIR
+- Incident Description
+
+For a NATURAL_EVENT claim, the following documents are required:
+
+- Claim Form
+- Repair Estimate
+- Incident Description
+
+Additional documents may be requested when required to establish
+the circumstances or amount of the claim.
+
+============================================================
+5. EXCLUSIONS
+============================================================
+
+The following are excluded from coverage:
+
+- Normal wear and tear
+- Mechanical breakdown without an insured accidental event
+- Electrical or mechanical failure caused solely by internal defect
+- Damage caused intentionally by the policyholder
+- Damage occurring while the vehicle is being used for an
+unauthorized purpose
+- Damage caused while driving under the influence of alcohol or
+  prohibited substances
+
+An excluded cause cannot be treated as a covered accidental loss
+without additional evidence establishing a covered event.
+
+============================================================
+6. CLAIM AMOUNT
+============================================================
+
+A claim amount must be supported by reasonable evidence such as a
+repair estimate, invoice, or other relevant documentation.
+
+The insurer should not approve an amount above the applicable IDV.
+
+Where the claimed amount cannot be reasonably established from the
+available evidence, the claim must be sent for manual review.
+
+============================================================
+7. CONTRADICTORY INFORMATION
+============================================================
+
+If material information differs between the claim form, incident
+description, FIR, repair estimate, or other supporting documents,
+the contradiction must be surfaced.
+
+The system must not silently select one version of contradictory
+information.
+
+Material contradictions require manual review.
+
+============================================================
+8. UNCERTAINTY AND MANUAL REVIEW
+============================================================
+
+A claim must be escalated for manual review when:
+
+- Material evidence is contradictory
+- Required evidence is unavailable and the claim cannot be assessed
+- The cause of damage is unclear
+- The available evidence does not establish whether the loss is
+  covered
+- The claimed amount cannot be reasonably established
+- A potentially high-risk or unusual situation is identified
+
+The assistant must explain why the claim was escalated.
+
+============================================================
+9. DECISION GUIDANCE
+============================================================
+
+APPROVE:
+
+Use only when the available evidence supports coverage, required
+information is present, no material contradiction exists, and the
+claim amount is within the applicable IDV.
+
+REJECT:
+
+Use when available evidence clearly establishes that the claim is
+excluded or otherwise clearly outside the policy.
+
+REQUEST_INFORMATION:
+
+Use when the claim may be covered but required information or
+documents are missing.
+
+ESCALATE:
+
+Use when the claim contains material contradictions, significant
+uncertainty, or circumstances requiring human judgement.
+
+============================================================
+10. ASSISTANT LIMITATIONS
+============================================================
+
+This assistant is an evidence review system.
+
+It must not invent documents, events, policy clauses, dates, amounts,
+or facts.
+
+Every important finding must identify its supporting evidence.
+
+Policy findings must reference the relevant policy section.
+
+The assistant does not determine that fraud has occurred.
+
+Suspicious, contradictory, or unusual information should be surfaced
+for human investigation rather than treated as proof of fraud.
