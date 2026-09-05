@@ -7,7 +7,10 @@ from datetime import datetime
 
 def parse_date(date_string):
     """Convert YYYY-MM-DD into a date object."""
-    return datetime.strptime(date_string, "%Y-%m-%d").date()
+    return datetime.strptime(
+        date_string,
+        "%Y-%m-%d"
+    ).date()
 
 
 def finding(
@@ -15,16 +18,18 @@ def finding(
     severity,
     message,
     source,
-    reference
+    reference,
+    policy_clause=None
 ):
-    """Create a standard finding object."""
+    """Create a standard deterministic finding object."""
 
     return {
         "type": finding_type,
         "severity": severity,
         "message": message,
         "source": source,
-        "reference": reference
+        "reference": reference,
+        "policy_clause": policy_clause
     }
 
 
@@ -56,15 +61,26 @@ def check_required_documents(claim):
         ]
     }
 
-    claim_type = claim.get("claim_type")
+    claim_type = claim.get(
+        "claim_type"
+    )
 
-    required = required_documents.get(claim_type, [])
+    required = required_documents.get(
+        claim_type,
+        []
+    )
 
-    submitted = set(claim.get("documents", []))
+    submitted = set(
+        claim.get(
+            "documents",
+            []
+        )
+    )
 
     findings = []
 
     for document in required:
+
         if document not in submitted:
 
             findings.append(
@@ -73,7 +89,8 @@ def check_required_documents(claim):
                     "HIGH",
                     f"Required document is missing: {document}",
                     "Claim",
-                    "documents"
+                    "documents",
+                    "POLICY SECTION 4: REQUIRED DOCUMENTS"
                 )
             )
 
@@ -116,7 +133,8 @@ def check_claim_reporting_window(claim):
                     f"{allowed_days} days."
                 ),
                 "Claim",
-                "incident_date/reported_date"
+                "incident_date/reported_date",
+                "POLICY SECTION 3: CLAIM REPORTING WINDOW"
             )
         ]
 
@@ -133,7 +151,10 @@ def check_insured_value(claim):
     """
 
     claimed_amount = float(
-        claim.get("claimed_amount", 0)
+        claim.get(
+            "claimed_amount",
+            0
+        )
     )
 
     insured_value = 500000
@@ -150,7 +171,8 @@ def check_insured_value(claim):
                     f"₹{insured_value:,.2f}."
                 ),
                 "Claim",
-                "claimed_amount"
+                "claimed_amount",
+                "POLICY SECTION 2: INSURED VALUE"
             )
         ]
 
@@ -190,7 +212,8 @@ def check_exclusions(claim):
                     f"under the policy."
                 ),
                 "Claim",
-                "damage_category"
+                "damage_category",
+                "POLICY SECTION 5: EXCLUSIONS"
             )
         ]
 
@@ -209,17 +232,29 @@ def check_contradictions(claim):
 
     findings = []
 
-    claim_form = claim.get("claim_form", {})
+    claim_form = claim.get(
+        "claim_form",
+        {}
+    )
 
-    incident_date = claim.get("incident_date")
-    form_date = claim_form.get("incident_date")
+    incident_date = claim.get(
+        "incident_date"
+    )
 
+    form_date = claim_form.get(
+        "incident_date"
+    )
+
+    # --------------------------------------------------------
     # Check claim record vs claim form
+    # --------------------------------------------------------
+
     if (
         incident_date
         and form_date
         and incident_date != form_date
     ):
+
         findings.append(
             finding(
                 "DATE_CONTRADICTION",
@@ -229,11 +264,15 @@ def check_contradictions(claim):
                     "does not match the claim form."
                 ),
                 "Claim",
-                "incident_date vs claim_form.incident_date"
+                "incident_date vs claim_form.incident_date",
+                "POLICY SECTION 7: CONTRADICTORY INFORMATION"
             )
         )
 
+    # --------------------------------------------------------
     # Check additional evidence
+    # --------------------------------------------------------
+
     additional_evidence = claim.get(
         "additional_evidence",
         {}
@@ -248,6 +287,7 @@ def check_contradictions(claim):
         and evidence_date
         and incident_date != evidence_date
     ):
+
         findings.append(
             finding(
                 "MATERIAL_CONTRADICTION",
@@ -257,7 +297,8 @@ def check_contradictions(claim):
                     "incident date from the claim record."
                 ),
                 "Additional Evidence",
-                "incident_date vs additional_evidence.incident_date"
+                "incident_date vs additional_evidence.incident_date",
+                "POLICY SECTION 7: CONTRADICTORY INFORMATION"
             )
         )
 
@@ -284,7 +325,11 @@ def check_uncertain_cause(claim):
     ).lower()
 
     if (
-        damage_category in [None, "", "unknown"]
+        damage_category in [
+            None,
+            "",
+            "unknown"
+        ]
         or "does not know" in description
         or "unknown" in description
         or "unclear" in description
@@ -299,7 +344,8 @@ def check_uncertain_cause(claim):
                     "the cause of the vehicle damage."
                 ),
                 "Incident Description",
-                "incident_description"
+                "incident_description",
+                "POLICY SECTION 8: UNCERTAINTY AND MANUAL REVIEW"
             )
         ]
 
@@ -318,27 +364,39 @@ def run_deterministic_checks(claim):
     findings = []
 
     findings.extend(
-        check_required_documents(claim)
+        check_required_documents(
+            claim
+        )
     )
 
     findings.extend(
-        check_claim_reporting_window(claim)
+        check_claim_reporting_window(
+            claim
+        )
     )
 
     findings.extend(
-        check_insured_value(claim)
+        check_insured_value(
+            claim
+        )
     )
 
     findings.extend(
-        check_exclusions(claim)
+        check_exclusions(
+            claim
+        )
     )
 
     findings.extend(
-        check_contradictions(claim)
+        check_contradictions(
+            claim
+        )
     )
 
     findings.extend(
-        check_uncertain_cause(claim)
+        check_uncertain_cause(
+            claim
+        )
     )
 
     return findings
@@ -362,25 +420,53 @@ def determine_initial_decision(findings):
         for item in findings
     }
 
+    # --------------------------------------------------------
+    # Highest priority: contradictions
+    # --------------------------------------------------------
+
     if "MATERIAL_CONTRADICTION" in finding_types:
         return "ESCALATE"
 
     if "DATE_CONTRADICTION" in finding_types:
         return "ESCALATE"
 
+    # --------------------------------------------------------
+    # Unknown / uncertain cause
+    # --------------------------------------------------------
+
     if "UNCERTAIN_CAUSE" in finding_types:
         return "ESCALATE"
+
+    # --------------------------------------------------------
+    # Missing evidence
+    # --------------------------------------------------------
 
     if "MISSING_DOCUMENT" in finding_types:
         return "REQUEST_INFORMATION"
 
+    # --------------------------------------------------------
+    # Excluded damage
+    # --------------------------------------------------------
+
     if "EXCLUDED_DAMAGE" in finding_types:
         return "REJECT"
+
+    # --------------------------------------------------------
+    # Reporting window exceeded
+    # --------------------------------------------------------
 
     if "CLAIM_WINDOW_EXCEEDED" in finding_types:
         return "ESCALATE"
 
+    # --------------------------------------------------------
+    # Insured value exceeded
+    # --------------------------------------------------------
+
     if "INSURED_VALUE_EXCEEDED" in finding_types:
         return "ESCALATE"
+
+    # --------------------------------------------------------
+    # No deterministic issues
+    # --------------------------------------------------------
 
     return "APPROVE"

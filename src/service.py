@@ -47,36 +47,46 @@ class ClaimReviewService:
             findings
         )
 
-        query = (
-            f"{claim['claim_type']} claim: "
-            f"{claim['incident_description']} "
-            f"Claimed amount: ₹{claim['claimed_amount']}"
-        )
+        try:
+            query = (
+                f"{claim['claim_type']} claim: "
+                f"{claim['incident_description']} "
+                f"Claimed amount: ₹{claim['claimed_amount']}"
+            )
 
-        policy_sections = self.retriever.search(
-            query,
-            top_k=4
-        )
+            policy_sections = self.retriever.search(
+                query,
+                top_k=4
+            )
 
-        review = self.reasoner.review_claim(
-            claim=claim,
-            policy_sections=policy_sections,
-            deterministic_findings=findings
-        )
+            review = self.reasoner.review_claim(
+                claim=claim,
+                policy_sections=policy_sections,
+                deterministic_findings=findings
+            )
 
-        return {
-            "claim_id": claim["claim_id"],
-            "initial_decision": initial_decision,
-            "final_review": review.model_dump(),
-            "policy_sections": [
-                {
-                    "section_id": section["section_id"],
-                    "title": section["title"],
-                    "score": round(
-                        section["score"],
-                        4
-                    )
-                }
-                for section in policy_sections
-            ]
-        }
+            return {
+                "claim_id": claim["claim_id"],
+                "initial_decision": initial_decision,
+                "review_source": "gemini",
+                "final_review": review.model_dump(),
+                "policy_sections": [
+                    {
+                        "section_id": section["section_id"],
+                        "title": section["title"],
+                        "score": round(
+                            section["score"],
+                            4
+                        )
+                    }
+                    for section in policy_sections
+                ]
+            }
+
+        except Exception as error:
+            return self._build_fallback_review(
+                claim=claim,
+                findings=findings,
+                initial_decision=initial_decision,
+                error=error
+            )
