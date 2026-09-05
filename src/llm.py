@@ -7,7 +7,7 @@ from google.genai import types
 from src.schemas import ClaimReview
 
 
-MODEL_NAME = "gemini-3.6-flash"
+MODEL_NAME = "gemini-3.1-flash-lite"
 
 
 class ClaimReasoner:
