@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, send_from_directory
 
 from src.service import ClaimReviewService, CLAIMS_PATH
 from src.validation import validate_new_claim
+from src.document_parser import extract_document_text
 
 
 app = Flask(
@@ -119,28 +120,118 @@ def review_claim():
 def review_new_claim():
     """
     Validate and review a completely new claim supplied by the user.
+
+    Supports PDF/TXT evidence uploads.
     """
 
-    data = request.get_json(
-        silent=True
-    )
-
-    if not data:
-        return jsonify({
-            "error": "Claim data is required."
-        }), 400
-
     try:
+
+        # ----------------------------------------------------
+        # Read normal form fields
+        # ----------------------------------------------------
+
+        data = {
+            "claim_id": request.form.get("claim_id"),
+            "claim_type": request.form.get("claim_type"),
+            "incident_date": request.form.get("incident_date"),
+            "reported_date": request.form.get("reported_date"),
+            "claim_amount": request.form.get("claim_amount"),
+            "damage_category": request.form.get("damage_category"),
+            "incident_description": request.form.get(
+                "incident_description"
+            ),
+            "additional_evidence": request.form.get(
+                "additional_evidence",
+                ""
+            )
+        }
+
+        # ----------------------------------------------------
+        # Extract Claim Form
+        # ----------------------------------------------------
+
+        claim_form_file = request.files.get(
+            "claim_form_file"
+        )
+
+        if claim_form_file:
+
+            data["claim_form"] = (
+                extract_document_text(
+                    claim_form_file
+                )
+            )
+
+        else:
+
+            data["claim_form"] = request.form.get(
+                "claim_form",
+                ""
+            )
+
+        # ----------------------------------------------------
+        # Extract Repair Estimate
+        # ----------------------------------------------------
+
+        repair_file = request.files.get(
+            "repair_estimate_file"
+        )
+
+        if repair_file:
+
+            data["repair_estimate"] = (
+                extract_document_text(
+                    repair_file
+                )
+            )
+
+        else:
+
+            data["repair_estimate"] = request.form.get(
+                "repair_estimate",
+                ""
+            )
+
+        # ----------------------------------------------------
+        # Extract FIR
+        # ----------------------------------------------------
+
+        fir_file = request.files.get(
+            "fir_file"
+        )
+
+        if fir_file:
+
+            data["fir"] = (
+                extract_document_text(
+                    fir_file
+                )
+            )
+
+        else:
+
+            data["fir"] = request.form.get(
+                "fir",
+                ""
+            )
+
+        # ----------------------------------------------------
+        # Validate using existing validation pipeline
+        # ----------------------------------------------------
 
         claim = validate_new_claim(
             data
         )
 
+        # ----------------------------------------------------
+        # Existing review pipeline
+        # ----------------------------------------------------
+
         result = service.review_claim(
             claim
         )
 
-        result["input_source"] = "new_claim"
+        result["input_source"] = "uploaded_documents"
 
         return jsonify(result)
 

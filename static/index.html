@@ -871,24 +871,46 @@ textarea{
             placeholder="Describe what happened, when it happened, and the observed damage."></textarea>
 
 
-        <label for="newClaimForm">
+        <label for="newClaimFormFile">
             Claim Form
         </label>
 
+        <input
+            id="newClaimFormFile"
+            type="file"
+            accept=".pdf,.txt">
+
+        <div
+            id="claimFormFileName"
+            class="hint">
+            Upload PDF or TXT. Required.
+        </div>
+
         <textarea
             id="newClaimForm"
-            placeholder="Claim form details / submitted information"></textarea>
+            placeholder="Or enter claim form details manually"></textarea>
 
 
         <div id="repairEstimateField">
 
-            <label for="newRepairEstimate">
+            <label for="newRepairEstimateFile">
                 Repair Estimate
             </label>
 
+            <input
+                id="newRepairEstimateFile"
+                type="file"
+                accept=".pdf,.txt">
+
+            <div
+                id="repairEstimateFileName"
+                class="hint">
+                Upload PDF or TXT. Required for this claim type.
+            </div>
+
             <textarea
                 id="newRepairEstimate"
-                placeholder="Garage repair estimate, amount and details"></textarea>
+                placeholder="Or enter repair estimate details manually"></textarea>
 
         </div>
 
@@ -897,13 +919,24 @@ textarea{
             id="firField"
             class="hidden">
 
-            <label for="newFir">
+            <label for="newFirFile">
                 FIR
             </label>
 
+            <input
+                id="newFirFile"
+                type="file"
+                accept=".pdf,.txt">
+
+            <div
+                id="firFileName"
+                class="hint">
+                Upload PDF or TXT. Required for theft claims.
+            </div>
+
             <textarea
                 id="newFir"
-                placeholder="Police FIR details / FIR number / incident details"></textarea>
+                placeholder="Or enter FIR details manually"></textarea>
 
         </div>
 
@@ -2278,40 +2311,26 @@ async function reviewNewClaim(){
 
     clearNotice();
 
-
     const claim =
         collectNewClaim();
-
 
     /* Basic frontend validation */
 
     if(
-
         !claim.claim_id ||
-
         !claim.incident_date ||
-
         !claim.reported_date ||
-
-        !Number.isFinite(
-            claim.claim_amount
-        ) ||
-
+        !Number.isFinite(claim.claim_amount) ||
         claim.claim_amount <= 0 ||
-
-        !claim.incident_description ||
-
-        !claim.claim_form
-
+        !claim.incident_description
     ){
 
         showNotice(
-            "Please enter a valid claimed amount and complete all required fields."
+            "Please complete the required claim details."
         );
 
         return;
     }
-
 
     if(
         claim.incident_description.length < 20
@@ -2324,72 +2343,180 @@ async function reviewNewClaim(){
         return;
     }
 
+    const claimFormFile =
+        $("newClaimFormFile").files[0];
+
+    const repairFile =
+        $("newRepairEstimateFile").files[0];
+
+    const firFile =
+        $("newFirFile").files[0];
+
+    const hasClaimForm =
+        Boolean(
+            claimFormFile ||
+            claim.claim_form
+        );
+
+    const hasRepairEstimate =
+        Boolean(
+            repairFile ||
+            claim.repair_estimate
+        );
+
+    const hasFir =
+        Boolean(
+            firFile ||
+            claim.fir
+        );
+
+    if(!hasClaimForm){
+
+        showNotice(
+            "Claim Form PDF/TXT or manual details are required."
+        );
+
+        return;
+    }
 
     if(
         claim.claim_type === "THEFT" &&
-        !claim.fir
+        !hasFir
     ){
 
         showNotice(
-            "Theft claims require FIR details."
+            "Theft claims require an FIR PDF/TXT or manual details."
         );
 
         return;
     }
-
 
     if(
         claim.claim_type !== "THEFT" &&
-        !claim.repair_estimate
+        !hasRepairEstimate
     ){
 
         showNotice(
-            "This claim type requires Repair Estimate details."
+            "This claim type requires a Repair Estimate PDF/TXT or manual details."
         );
 
         return;
     }
 
-
     const button =
         $("reviewNewBtn");
-
 
     setLoading(
         button,
         true
     );
 
-
     showNotice(
-        "Running deterministic policy checks and grounded AI reasoning…",
+        "Extracting evidence and running policy review…",
         "info"
     );
 
-
     try{
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "claim_id",
+            claim.claim_id
+        );
+
+        formData.append(
+            "claim_type",
+            claim.claim_type
+        );
+
+        formData.append(
+            "incident_date",
+            claim.incident_date
+        );
+
+        formData.append(
+            "reported_date",
+            claim.reported_date
+        );
+
+        formData.append(
+            "claim_amount",
+            claim.claim_amount
+        );
+
+        formData.append(
+            "damage_category",
+            claim.damage_category
+        );
+
+        formData.append(
+            "incident_description",
+            claim.incident_description
+        );
+
+        formData.append(
+            "additional_evidence",
+            claim.additional_evidence
+        );
+
+        if(claimFormFile){
+
+            formData.append(
+                "claim_form_file",
+                claimFormFile
+            );
+
+        }else{
+
+            formData.append(
+                "claim_form",
+                claim.claim_form
+            );
+        }
+
+        if(repairFile){
+
+            formData.append(
+                "repair_estimate_file",
+                repairFile
+            );
+
+        }else{
+
+            formData.append(
+                "repair_estimate",
+                claim.repair_estimate
+            );
+        }
+
+        if(firFile){
+
+            formData.append(
+                "fir_file",
+                firFile
+            );
+
+        }else{
+
+            formData.append(
+                "fir",
+                claim.fir
+            );
+        }
 
         const response =
             await fetch(
                 "/api/review-new",
                 {
                     method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:JSON.stringify(
-                        claim
-                    )
+                    body:formData
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if(!response.ok){
 
@@ -2400,12 +2527,9 @@ async function reviewNewClaim(){
             );
         }
 
-
         renderReview(data);
 
-
         clearNotice();
-
 
     }catch(error){
 
@@ -2424,6 +2548,32 @@ async function reviewNewClaim(){
 
 
 /* ==========================================================
+   FILE INPUT HELPERS
+========================================================== */
+
+function setupFileInput(
+    inputId,
+    labelId
+){
+
+    $(inputId)
+        .addEventListener(
+            "change",
+            () => {
+
+                const file =
+                    $(inputId).files[0];
+
+                $(labelId).textContent =
+                    file
+                        ? `Selected: ${file.name}`
+                        : "No file selected.";
+            }
+        );
+}
+
+
+/* ==========================================================
    CLEAR NEW CLAIM FORM
 ========================================================== */
 
@@ -2436,8 +2586,11 @@ function clearNewForm(){
         "newAmount",
         "newDescription",
         "newClaimForm",
+        "newClaimFormFile",
         "newRepairEstimate",
+        "newRepairEstimateFile",
         "newFir",
+        "newFirFile",
         "newAdditionalEvidence"
 
     ].forEach(
@@ -2456,6 +2609,15 @@ function clearNewForm(){
 
 
     clearNotice();
+
+    $("claimFormFileName").textContent =
+        "Upload PDF or TXT. Required.";
+
+    $("repairEstimateFileName").textContent =
+        "Upload PDF or TXT. Required for this claim type.";
+
+    $("firFileName").textContent =
+        "Upload PDF or TXT. Required for theft claims.";
 
 
     updateEvidenceFields();
@@ -2517,6 +2679,22 @@ document.addEventListener(
                 "click",
                 clearNewForm
             );
+
+
+        setupFileInput(
+            "newClaimFormFile",
+            "claimFormFileName"
+        );
+
+        setupFileInput(
+            "newRepairEstimateFile",
+            "repairEstimateFileName"
+        );
+
+        setupFileInput(
+            "newFirFile",
+            "firFileName"
+        );
 
 
         updateEvidenceFields();
