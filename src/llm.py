@@ -7,7 +7,10 @@ from google.genai import types
 from src.schemas import ClaimReview
 
 
-MODEL_NAME = "gemini-3.1-flash-lite"
+MODEL_NAME = os.getenv(
+    "GEMINI_MODEL",
+    "gemini-3.5-flash-lite"
+)
 
 
 class ClaimReasoner:
